@@ -56,10 +56,10 @@ jobs:
         with:
           path: artifacts
 
-      - name: Prepare artifacts
+      - name: Merge artifacts correctly
         run: |
           mkdir -p out/make
-          cp -r artifacts/*/* out/make/
+          rsync -av artifacts/*/make/ out/make/
 
       - name: Setup Node
         uses: actions/setup-node@v4

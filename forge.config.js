@@ -29,8 +29,7 @@ module.exports = {
           owner: 'giacop002',
           name: 'BRT_photo_app'
         },
-        prerelease: true,
-        draft: true
+        prerelease: true
       }
     }
   ],

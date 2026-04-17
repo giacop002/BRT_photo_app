@@ -56,10 +56,13 @@ jobs:
         with:
           path: artifacts
 
+      - name: Debug artifacts
+        run: ls -R artifacts
+
       - name: Merge artifacts correctly
         run: |
           mkdir -p out/make
-          rsync -av artifacts/*/make/ out/make/
+          rsync -av artifacts/ out/make/
 
       - name: Setup Node
         uses: actions/setup-node@v4

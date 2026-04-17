@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'   # se ejecuta cuando haces git tag v1.0.0
 
+permissions:
+  contents: write
+
 jobs:
   make:
     name: Make on ${{ matrix.os }}

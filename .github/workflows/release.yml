@@ -26,11 +26,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Sync version with tag
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          npm version $VERSION --no-git-tag-version
-
       - name: Install dependencies
         run: npm install
 
@@ -55,11 +50,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Sync version with tag
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          npm version $VERSION --no-git-tag-version
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4

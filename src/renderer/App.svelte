@@ -1,8 +1,14 @@
 <script>
   import Sidebar from "./components/Sidebar.svelte";
+  import MainWindow from "./components/MainWindow.svelte";
 
   let probes = [];
+  let samples = [];
+
   let selectedProbeId = null;
+  let selectedSampleId = null;
+
+  let loadingSamples = false;
 
   async function loadProbes() {
     probes = await window.api.getProbes();
@@ -10,7 +16,11 @@
 
   async function handleSelectProbe(id) {
     selectedProbeId = id;
-    // cargar samples
+    selectedSampleId = null;
+
+    loadingSamples = true;
+    samples = await window.api.getSamplesByProbe(id);
+    loadingSamples = false;
   }
 
   async function handleCreateProbe(data) {
@@ -24,10 +34,14 @@
     await loadProbes();
   }
 
+  function handleSelectSample(id) {
+    selectedSampleId = id;
+  }
+
   loadProbes();
 </script>
 
-<div>
+<div class="app">
   <Sidebar
     {probes}
     {selectedProbeId}
@@ -35,4 +49,18 @@
     on:createProbe={(e) => handleCreateProbe(e.detail)}
     on:deleteProbe={(e) => handleDeleteProbe(e.detail.id)}
   />
+
+  <MainWindow
+    {samples}
+    {selectedSampleId}
+    {loadingSamples}
+    on:selectSample={(e) => handleSelectSample(e.detail.id)}
+  />
 </div>
+
+<style>
+  .app {
+    display: flex;
+    height: 100vh;
+  }
+</style>

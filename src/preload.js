@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const path = require('path')
 const { pathToFileURL } = require('url')
+const { selectImageFile } = require('./master/fileStorage')
 
 contextBridge.exposeInMainWorld('api', {
   createProbe: (data) => ipcRenderer.invoke('create-probe', data),
@@ -12,5 +13,8 @@ contextBridge.exposeInMainWorld('api', {
   createObservation: (data) => ipcRenderer.invoke('create-observation', data),
   getObservationsBySample: (sample_id) => ipcRenderer.invoke('get-observations-by-sample', sample_id),
   deleteObservation: (observation_id) => ipcRenderer.invoke('delete-observation', observation_id),
-  toFileUrl: (filePath) => { return pathToFileURL(filePath).href }
+  toFileUrl: (filePath) => { return pathToFileURL(filePath).href },
+  copyImageToLocal: (originalPath) => ipcRenderer.invoke('copy-image-to-local', originalPath),
+  getImagesDir: () => ipcRenderer.invoke('get-images-dir'),
+  selectImageFile: () => ipcRenderer.invoke('select-image-file')
 })

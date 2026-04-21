@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { app } = require('electron');
+const { app, dialog } = require('electron');
 const { v4: uuidv4 } = require('uuid');
 
 function getImagesDir() {
@@ -49,7 +49,21 @@ function copyImageToLocal(originalPath) {
     return destinationPath;
 }
 
+async function selectImageFile() {
+    const result = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [
+            { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'webp'] }
+        ]
+    });
+
+    if (result.canceled) return null
+
+    return result.filePaths[0];
+}
+
 module.exports = {
     copyImageToLocal,
-    getImagesDir
+    getImagesDir,
+    selectImageFile
 };

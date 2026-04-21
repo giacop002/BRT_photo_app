@@ -31,11 +31,35 @@
 
   async function handleDeleteProbe(id) {
     await window.api.deleteProbe(id);
+    selectedProbeId = null;
     await loadProbes();
   }
 
   function handleSelectSample(id) {
     selectedSampleId = id;
+  }
+
+  async function handleCreateSample(data) {
+    const { file_path, ...rest } = data
+    console.log('Creating sample with data:', data);
+    console.log('File path:', file_path);
+
+    const result = await window.api.copyImageToLocal(file_path);
+
+    console.log('Image copied to:', result);
+
+    await window.api.createSample({
+      ...rest,
+      probe_id: selectedProbeId,
+      image_path: result
+    })
+
+    await handleSelectProbe(selectedProbeId)
+  }
+
+  async function handleDeleteSample(id) {
+    await window.api.deleteSample(id);
+    await handleSelectProbe(selectedProbeId);
   }
 
   loadProbes();
@@ -55,6 +79,10 @@
     {selectedSampleId}
     {loadingSamples}
     on:selectSample={(e) => handleSelectSample(e.detail.id)}
+    on:createSample={(e) => handleCreateSample(e.detail)}
+    on:deleteSample={(e) => handleDeleteSample(e.detail.id)}
+    {selectedProbeId}
+
   />
 </div>
 

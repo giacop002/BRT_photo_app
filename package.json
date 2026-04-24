@@ -45,5 +45,10 @@
     "electron-squirrel-startup": "^1.0.1",
     "update-electron-app": "^3.1.2",
     "uuid": "^13.0.0"
-  }
+  },
+  "files": [
+    "dist/**/*",
+    "main.js",
+    "src/**/*"
+  ]
 }

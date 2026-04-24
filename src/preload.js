@@ -16,5 +16,6 @@ contextBridge.exposeInMainWorld('api', {
   toFileUrl: (filePath) => { return pathToFileURL(filePath).href },
   copyImageToLocal: (originalPath) => ipcRenderer.invoke('copy-image-to-local', originalPath),
   getImagesDir: () => ipcRenderer.invoke('get-images-dir'),
-  selectImageFile: () => ipcRenderer.invoke('select-image-file')
+  selectImageFile: () => ipcRenderer.invoke('select-image-file'),
+  getSampleById: (sample_id) => ipcRenderer.invoke('get-sample-by-id', sample_id)
 })

@@ -315,7 +315,8 @@
           on:mouseup={cropMoveEnd}
           on:mousedown={cropMoveStart}
           on:mousemove={cropMove}
-          on:mouseout={cropMoveEnd} />
+          on:mouseout={cropMoveEnd}
+        />
         <div class="zoom-box" on:mousedown={zoomMoveStart} />
       </div>
       <!-- 阴影遮挡块 -->

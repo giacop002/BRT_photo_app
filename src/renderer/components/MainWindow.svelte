@@ -2,6 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import SampleList from "./samples/SampleList.svelte";
     import SampleCreateForm from "./samples/SampleCreateForm.svelte";
+    import SampleDetail from "./samples/SampleDetail.svelte";
 
     export let samples = [];
     export let selectedSampleId = null;
@@ -32,6 +33,11 @@
                 isCreatingSample = false;
                 }}
             />
+        {:else if selectedSampleId}
+            <SampleDetail
+                sampleId={selectedSampleId}
+                on:back={() => selectedSampleId = null}
+            />
         {:else}
             <div class="header">
                 <h2>Probe {selectedProbeId}</h2>
@@ -54,7 +60,7 @@
                 <SampleList
                 {samples}
                 {selectedSampleId}
-                on:selectSample={(e) => handleSelectSample(e.detail)}
+                on:selectSample={(e) => handleSelectSample(e.detail.id)}
                 />
             {/if}
         {/if}

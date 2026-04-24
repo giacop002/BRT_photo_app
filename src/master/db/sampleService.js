@@ -1,3 +1,4 @@
+const { get } = require('svelte/store')
 const { getDB } = require('./db')
 const { v4: uuidv4 } = require('uuid')
 
@@ -20,6 +21,12 @@ function getSamplesByProbe(probe_id) {
   return stmt.all(probe_id)
 }
 
+function getSampleById(sample_id) {
+  const db = getDB()
+  const stmt = db.prepare('SELECT * FROM samples WHERE id = ?')
+  return stmt.get(sample_id)
+}
+
 function deleteSample(sample_id) {
   const db = getDB()
   const stmt = db.prepare('DELETE FROM samples WHERE id = ?')
@@ -29,5 +36,6 @@ function deleteSample(sample_id) {
 module.exports = {
   createSample,
   getSamplesByProbe,
+  getSampleById,
   deleteSample
 }

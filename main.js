@@ -16,7 +16,13 @@ const createWindow = () => {
     }
   })
 
-  win.loadFile(path.join(__dirname, 'dist', 'index.html'))
+  const isDev = !app.isPackaged;
+
+  const indexPath = isDev
+    ? path.join(__dirname, 'dist', 'index.html')
+    : path.join(app.getAppPath(), 'dist', 'index.html');
+
+  win.loadFile(indexPath);
 }
 
 app.whenReady().then(() => {

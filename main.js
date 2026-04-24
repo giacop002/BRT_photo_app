@@ -12,7 +12,7 @@ const createWindow = () => {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
-      webSecurity: true
+      webSecurity: false
     }
   })
 

@@ -104,13 +104,13 @@
 
   .item {
     padding: 10px 12px;
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
   }
 
   .item:hover {
     background: #2a2a2a;
+    text-decoration: underline;
   }
 
   .item.selected {

@@ -3,6 +3,7 @@
     import ImagePreview from "../img/ImagePreview.svelte";
 
     export let isOpen = false;
+    export let samples = [];
 
     const dispatch = createEventDispatcher();
 
@@ -11,6 +12,22 @@
     let depth_from = '';
     let depth_to = '';
     let sample_date = '';
+
+    let initialized = false;
+
+    $: if (samples && !initialized) {
+        if (samples.length === 0) {
+            depth_from = 0;
+        } else {
+            const maxSample = samples.reduce((max, s) => {
+                const to = s.depth_to ?? 0;
+                return to > (max.depth_to ?? 0) ? s : max;
+            }, samples[0]);
+
+            depth_from = maxSample.depth_to ?? 0;
+        }
+        initialized = true;
+    }
 
     async function handleSubmit() {
         if (!file_path) return;
@@ -40,6 +57,8 @@
         depth_from = '';
         depth_to = '';
         sample_date = '';
+
+        initialized = false;
     }
 
     async function pickFile() {
@@ -70,8 +89,11 @@
             </div>
 
             <div class="right">
+                <p>Depth from:</p>
                 <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
+                <p>Depth to:</p>
                 <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
+                <p>Sample date:</p>
                 <input type="date" bind:value={sample_date} />
 
                 <div class="actions">

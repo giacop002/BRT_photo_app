@@ -20,12 +20,28 @@
     function handleOpenSampleModal() {
         isCreatingSample = true;
     }
+
+    function handleExportSamples() {
+        if (!selectedProbeId) return;
+        if (samples.length === 0) {
+            alert('No samples to export');
+            return;
+        }
+        dispatch('exportAllSamples');
+    }
+
+    function handleBackToList() {
+        selectedSampleId = null;
+        dispatch('backToList');
+    }
+
 </script>
 
 <div class="main">
     <div class="samples">
         {#if isCreatingSample}
             <SampleCreateForm
+                {samples}
                 isOpen={isCreatingSample}
                 on:close={() => isCreatingSample = false}
                 on:submit={(e) => {
@@ -36,21 +52,22 @@
         {:else if selectedSampleId}
             <SampleDetail
                 sampleId={selectedSampleId}
-                on:back={() => selectedSampleId = null}
+                on:back={handleBackToList}
             />
         {:else}
             <div class="header">
                 <h2>Probe {selectedProbeId}</h2>
                 <div class="button-box">
-                    <button class="create"
+                    <button class="create btn"
                             disabled={!selectedProbeId}
                             on:click={handleOpenSampleModal}>
                         + Add Sample
                     </button>
-                    <button class="delete"
-                            disabled={!selectedSampleId}
-                            on:click={() => dispatch('deleteSample', { id: selectedSampleId })}>
-                        Delete Sample
+                    <button class="export btn"
+                            disabled={true}
+                            on:click={handleExportSamples}
+                    >
+                        Export all samples
                     </button>
                 </div>
             </div>
@@ -61,6 +78,8 @@
                 {samples}
                 {selectedSampleId}
                 on:selectSample={(e) => handleSelectSample(e.detail.id)}
+                on:deleteSample={(e) => dispatch('deleteSample', { id: e.detail.id })}
+                on:exportSample={(e) => dispatch('exportThisSample', { id: e.detail.id })}
                 />
             {/if}
         {/if}

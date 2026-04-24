@@ -7,11 +7,8 @@
   const dispatch = createEventDispatcher()
 </script>
 
-<button
-  type="button"
+<div
   class="row {isSelected ? 'selected' : ''}"
-  on:click={() => dispatch('click')}
-  aria-pressed={isSelected}
 >
   <img src={sample.image_path} alt="Sample preview" />
 
@@ -23,15 +20,22 @@
       {sample.sample_date || 'Unknown date'}
     </div>
   </div>
-</button>
+
+  <div class="actions">
+    <button on:click={() => dispatch('click')}>Detail</button>
+    <button on:click={() => dispatch('export')} disabled={true}>Export</button>
+    <button on:click={() => dispatch('delete')}>Delete</button>
+  </div>
+</div>
 
 <style>
   .row {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 10px;
     padding: 10px;
     width: 100%;
-    cursor: pointer;
     border: none;
     border-bottom: 1px solid #eee;
     background: transparent;
@@ -55,9 +59,11 @@
   }
 
   .info {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 4px;
   }
 
   .depth {
@@ -67,5 +73,16 @@
   .date {
     font-size: 12px;
     color: #666;
+  }
+
+  .actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .actions button {
+    font-size: 12px;
+    padding: 4px 8px;
+    cursor: pointer;
   }
 </style>

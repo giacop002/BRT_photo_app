@@ -19,9 +19,11 @@
     async function handleAddObservation() {
         if (!newNote.trim()) return;
 
+        console.log('Adding observation for sample ID:', sampleId, 'Note:', newNote);
+
         await window.api.createObservation({
             sample_id: sampleId,
-            note: newNote
+            notes: newNote
         });
 
         newNote = '';
@@ -44,19 +46,16 @@
 
     {#if sample}
         <div class="content">
-            <!-- Imagen -->
             <div class="image">
                 <img src={`file://${sample.image_path}`} alt="sample" />
             </div>
 
-            <!-- Metadata -->
             <div class="meta">
                 <p><strong>Depth:</strong> {sample.depth_from} - {sample.depth_to}</p>
                 <p><strong>Date:</strong> {sample.sample_date || '-'}</p>
             </div>
         </div>
 
-        <!-- Observaciones -->
         <div class="observations">
             <h3>Observations</h3>
 

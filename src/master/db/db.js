@@ -24,7 +24,8 @@ function initDB() {
       depth_from REAL,
       depth_to REAL,
       sample_date TEXT,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(probe_id) REFERENCES probes(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS observations (
@@ -32,7 +33,7 @@ function initDB() {
       sample_id TEXT NOT NULL,
       notes TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(sample_id) REFERENCES samples(id)
+      FOREIGN KEY(sample_id) REFERENCES samples(id) ON DELETE CASCADE
     );
 
     CREATE INDEX IF NOT EXISTS idx_samples_date ON samples(sample_date);

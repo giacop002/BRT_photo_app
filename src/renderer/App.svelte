@@ -41,12 +41,6 @@
 
   async function handleCreateSample(data) {
     const { file_path, cropped_image, ...rest } = data
-    console.log('Creating sample with data:', data);
-    console.log('File path:', file_path);
-
-    // const result = await window.api.copyImageToLocal(file_path);
-
-    // console.log('Image copied to:', result);
 
     await window.api.createSample({
       ...rest,
@@ -62,6 +56,36 @@
     await window.api.deleteSample(id);
     await handleSelectProbe(selectedProbeId);
   }
+
+  async function handleBackToList() {
+    selectedSampleId = null;
+    await handleSelectProbe(selectedProbeId);
+  }
+
+  async function handleExportAllSamples() {
+    if (!selectedProbeId) return;
+    if (samples.length === 0) {
+      alert('No samples to export');
+      return;
+    }
+
+    const result = await window.api.exportSamples(selectedProbeId);
+    if (result.success) {
+      alert('Samples exported successfully');
+    } else {
+      alert('Failed to export samples: ' + result.error);
+    }
+  }
+
+  async function handleExportThisSample(id) {
+    const result = await window.api.exportSample(id);
+    if (result.success) {
+      alert('Sample exported successfully');
+    } else {
+      alert('Failed to export sample: ' + result.error);
+    }
+  }
+
 
   loadProbes();
 </script>
@@ -82,6 +106,9 @@
     on:selectSample={(e) => handleSelectSample(e.detail.id)}
     on:createSample={(e) => handleCreateSample(e.detail)}
     on:deleteSample={(e) => handleDeleteSample(e.detail.id)}
+    on:exportAllSamples={handleExportAllSamples}
+    on:exportThisSample={(e) => handleExportThisSample(e.detail.id)}
+    on:backToList={handleBackToList}
     {selectedProbeId}
 
   />

@@ -10,6 +10,12 @@
     function handleSelect(id) {
         dispatch('selectSample', { id });
     }
+
+    function handleDelete(id) {
+        if (confirm('Are you sure you want to delete this sample?')) {
+            dispatch('deleteSample', { id });
+        }
+    }
 </script>
 
 <div class="list">
@@ -21,6 +27,8 @@
                 {sample}
                 isSelected={sample.id === selectedSampleId}
                 on:click={() => handleSelect(sample.id)}
+                on:delete={() => handleDelete(sample.id)}
+                on:export={() => dispatch('exportSample', { id: sample.id })}
             />
         {/each}
     {/if}

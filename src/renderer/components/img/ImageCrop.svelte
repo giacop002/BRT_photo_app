@@ -310,6 +310,9 @@
 
       <!-- 裁剪显示容器 -->
       <div class="crop-box" style={cropBoxStyle}>
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-mouse-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
         <div
           class="crop-box__move"
           on:mouseup={cropMoveEnd}
@@ -317,6 +320,7 @@
           on:mousemove={cropMove}
           on:mouseout={cropMoveEnd}
         />
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="zoom-box" on:mousedown={zoomMoveStart} />
       </div>
       <!-- 阴影遮挡块 -->

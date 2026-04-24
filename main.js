@@ -5,7 +5,7 @@ const { setupIpcHandlers } = require('./src/master/ipcMain')
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
+    width: 1200,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'src', 'preload.js'),

@@ -40,18 +40,19 @@
   }
 
   async function handleCreateSample(data) {
-    const { file_path, ...rest } = data
+    const { file_path, cropped_image, ...rest } = data
     console.log('Creating sample with data:', data);
     console.log('File path:', file_path);
 
-    const result = await window.api.copyImageToLocal(file_path);
+    // const result = await window.api.copyImageToLocal(file_path);
 
-    console.log('Image copied to:', result);
+    // console.log('Image copied to:', result);
 
     await window.api.createSample({
       ...rest,
       probe_id: selectedProbeId,
-      image_path: result
+      image_path: file_path,
+      cropped_image: cropped_image
     })
 
     await handleSelectProbe(selectedProbeId)

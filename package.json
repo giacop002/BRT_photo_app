@@ -35,7 +35,9 @@
     "@electron/fuses": "^1.8.0",
     "@sveltejs/vite-plugin-svelte": "^2.5.3",
     "electron": "^41.2.1",
+    "sass": "^1.99.0",
     "svelte": "^4.2.20",
+    "svelte-preprocess": "^6.0.3",
     "vite": "^4.5.14"
   },
   "dependencies": {

@@ -1,15 +1,12 @@
 const { getDB } = require('./db')
 const { v4: uuidv4 } = require('uuid')
-const { copyImageToLocal } = require('../fileStorage')
 
 function createSample({ probe_id, image_path, depth_from, depth_to, sample_date }) {
   const db = getDB()
   const id = uuidv4()
 
-  const storedImagePath = copyImageToLocal(image_path)
-
   const stmt = db.prepare('INSERT INTO samples (id, probe_id, image_path, depth_from, depth_to, sample_date) VALUES (?, ?, ?, ?, ?, ?)')
-  stmt.run(id, probe_id, storedImagePath, depth_from, depth_to, sample_date)
+  stmt.run(id, probe_id, image_path, depth_from, depth_to, sample_date)
   return id
 }
 

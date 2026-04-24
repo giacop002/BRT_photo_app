@@ -62,8 +62,35 @@ async function selectImageFile() {
     return result.filePaths[0];
 }
 
+function saveBase64Image(dataUrl) {
+    if (!dataUrl) {
+        throw new Error('Data URL inválido.');
+    }
+
+    const matches = dataUrl.match(/^data:(image\/\w+);base64,(.+)$/);
+
+    if (!matches) {
+        throw new Error('Formato de Data URL no válido.');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+
+    const ext = mimeType.split('/')[1];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const imagesDir = getImagesDir();
+    const fileName = `${uuidv4()}.${ext}`;
+    const filePath = path.join(imagesDir, fileName);
+
+    fs.writeFileSync(filePath, buffer);
+
+    return filePath;
+}
+
 module.exports = {
     copyImageToLocal,
     getImagesDir,
-    selectImageFile
+    selectImageFile,
+    saveBase64Image
 };

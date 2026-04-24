@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import SampleList from "./samples/SampleList.svelte";
-    import SampleFormModal from "./samples/SampleFormModal.svelte";
+    import SampleCreateForm from "./samples/SampleCreateForm.svelte";
 
     export let samples = [];
     export let selectedSampleId = null;
@@ -23,51 +23,56 @@
 
 <div class="main">
     <div class="samples">
-        <div class="header">
-            <h2>Samples</h2>
-            <div class="button-box">
-                <button class="create"
-                        disabled={!selectedProbeId}
-                        on:click={handleOpenSampleModal}>
-                    + Add Sample
-                </button>
-                <button class="delete"
-                        disabled={!selectedSampleId}
-                        on:click={() => dispatch('deleteSample', { id: selectedSampleId })}>
-                    Delete Sample
-                </button>
-            </div>
-        </div>
-        {#if !selectedProbeId}
-            <div class="empty">Please select a probe to see its samples</div>
-        {:else}
-            <SampleList
-            {samples}
-            {selectedSampleId}
-            on:selectSample={(e) => handleSelectSample(e.detail)}
+        {#if isCreatingSample}
+            <SampleCreateForm
+                isOpen={isCreatingSample}
+                on:close={() => isCreatingSample = false}
+                on:submit={(e) => {
+                dispatch('createSample', e.detail);
+                isCreatingSample = false;
+                }}
             />
+        {:else}
+            <div class="header">
+                <h2>Probe {selectedProbeId}</h2>
+                <div class="button-box">
+                    <button class="create"
+                            disabled={!selectedProbeId}
+                            on:click={handleOpenSampleModal}>
+                        + Add Sample
+                    </button>
+                    <button class="delete"
+                            disabled={!selectedSampleId}
+                            on:click={() => dispatch('deleteSample', { id: selectedSampleId })}>
+                        Delete Sample
+                    </button>
+                </div>
+            </div>
+            {#if !selectedProbeId}
+                <div class="empty">Please select a probe to see its samples</div>
+            {:else}
+                <SampleList
+                {samples}
+                {selectedSampleId}
+                on:selectSample={(e) => handleSelectSample(e.detail)}
+                />
+            {/if}
         {/if}
     </div>
 
     {#if loadingSamples}
       <div class="overlay">Loading samples...</div>
     {/if}
-
-    {#if isCreatingSample}
-      <SampleFormModal
-        isOpen={isCreatingSample}
-        on:close={() => isCreatingSample = false}
-        on:submit={(e) => {
-          dispatch('createSample', e.detail);
-          isCreatingSample = false;
-        }}
-      />
-    {/if}
 </div>
 
 <style>
     .main {
         flex: 1;
+        height: 100%;
+    }
+
+    .samples {
+        height: 95%;
     }
 
     .overlay {

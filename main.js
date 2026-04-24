@@ -22,7 +22,7 @@ const createWindow = () => {
     ? path.join(__dirname, 'dist', 'index.html')
     : path.join(app.getAppPath(), 'dist', 'index.html');
 
-  win.loadFile(indexPath);
+  win.loadURL(`file://${indexPath}`);;
 }
 
 app.whenReady().then(() => {

@@ -56,7 +56,13 @@
             />
         {:else}
             <div class="header">
-                <h2>Probe {selectedProbeId}</h2>
+                <h2>
+                {#if (!selectedProbeId)}
+                    No probe selected
+                {:else}
+                    Probe {selectedProbeId}
+                {/if}
+                </h2>
                 <div class="button-box">
                     <button class="create btn"
                             disabled={!selectedProbeId}

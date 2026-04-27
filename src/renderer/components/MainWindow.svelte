@@ -21,7 +21,11 @@
         isCreatingSample = true;
     }
 
-    function handleExportSamples() {
+    function handleExportThisSample(id) {
+        dispatch('exportThisSample', { id });
+    }
+
+    function handleExportAllSamples() {
         if (!selectedProbeId) return;
         if (samples.length === 0) {
             alert('No samples to export');
@@ -53,6 +57,7 @@
             <SampleDetail
                 sampleId={selectedSampleId}
                 on:back={handleBackToList}
+                on:exportSample={(e) => handleExportThisSample(e.detail.id)}
             />
         {:else}
             <div class="header">
@@ -71,7 +76,7 @@
                     </button>
                     <button class="export btn"
                             disabled={true}
-                            on:click={handleExportSamples}
+                            on:click={handleExportAllSamples}
                     >
                         Export all samples
                     </button>
@@ -85,7 +90,7 @@
                 {selectedSampleId}
                 on:selectSample={(e) => handleSelectSample(e.detail.id)}
                 on:deleteSample={(e) => dispatch('deleteSample', { id: e.detail.id })}
-                on:exportSample={(e) => dispatch('exportThisSample', { id: e.detail.id })}
+                on:exportSample={(e) => handleExportThisSample(e.detail.id)}
                 />
             {/if}
         {/if}

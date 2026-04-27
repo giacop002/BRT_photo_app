@@ -78,7 +78,7 @@
   }
 
   async function handleExportThisSample(id) {
-    const result = await window.api.exportSample(id);
+    const result = await window.api.exportSample(id, selectedProbeId);
     if (result.success) {
       alert('Sample exported successfully');
     } else {

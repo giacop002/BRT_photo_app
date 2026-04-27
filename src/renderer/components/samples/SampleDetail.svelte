@@ -40,7 +40,19 @@
 
 <div class="container">
     <div class="header">
-        <button on:click={() => dispatch('back')}>← Back</button>
+        <div class="actions">
+            <button
+                on:click={() => dispatch('back')}
+            >
+                ← Back
+            </button>
+            <button
+                on:click={() => dispatch('exportSample', { id: sampleId })}
+                disabled={true}
+            >
+                Export
+            </button>
+        </div>
         <h2>Sample Detail</h2>
     </div>
 
@@ -118,5 +130,10 @@
 
 textarea {
     min-height: 80px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
 }
 </style>

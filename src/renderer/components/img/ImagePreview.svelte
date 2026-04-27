@@ -10,12 +10,19 @@
   function handleCrop(e) {
     dispatch('crop', e.detail);
   }
+
+  let cropRef;
+
+  export function maximizeCrop() {
+    cropRef?.maximizeCrop();
+  }
 </script>
 
 <div class="container">
   {#if enableCrop}
     <ImageCrop
       src={`file://${file_path}`}
+      bind:this={cropRef}
       on:crop={handleCrop}
     />
   {:else}

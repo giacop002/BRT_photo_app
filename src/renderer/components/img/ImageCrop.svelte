@@ -1,5 +1,5 @@
 <script>
-  import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
 
   export let src;
 
@@ -85,7 +85,7 @@
     wrapBox = Object.assign(wrapBox, {
       width,
       height,
-      top: top
+      top: 0
     });
 
     scale.ratio = scale.width / width;
@@ -188,6 +188,7 @@
 
   function zoomMoveStart(e) {
     e.preventDefault();
+    setWrapPosition();
     zoomBox.isMove = true;
   }
 
@@ -229,19 +230,24 @@
     return arr.join(";");
   }
 
-  function start(src) {
+  async function start(src) {
     if (imgSrc === src) return;
     imgSrc = src;
 
     const img = new Image();
     img.src = imgSrc;
+
     if (!imgSrc.startsWith('file://')) {
       img.setAttribute("crossOrigin", "Anonymous");
     }
-    img.onload = () => {
+
+
+    img.onload = async () => {
       originImg = img;
       scale.width = img.width;
       scale.height = img.height;
+
+      await tick();
 
       setWrapBox();
       setWrapPosition();
@@ -251,15 +257,27 @@
     };
   }
 
-    onMount(() => {
-        document.addEventListener("mouseup", zoomMoveEnd);
-        document.addEventListener("mousemove", zoomMove);
-    });
+  onMount(() => {
+      document.addEventListener("mouseup", zoomMoveEnd);
+      document.addEventListener("mousemove", zoomMove);
+  });
 
-    onDestroy(() => {
-        document.removeEventListener("mouseup", zoomMoveEnd);
-        document.removeEventListener("mousemove", zoomMove);
-    });
+  onDestroy(() => {
+    document.removeEventListener("mouseup", zoomMoveEnd);
+    document.removeEventListener("mousemove", zoomMove);
+  });
+
+  export function maximizeCrop() {
+    if (!wrapBox.width || !wrapBox.height) return;
+
+    cropBox.left = 0;
+    cropBox.top = 0;
+    cropBox.width = wrapBox.width;
+    cropBox.height = wrapBox.height;
+
+    setCoverBox();
+    crop();
+  }
 </script>
 
 <div>

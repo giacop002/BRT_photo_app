@@ -15,6 +15,8 @@
 
     let initialized = false;
 
+    let previewRef;
+
     $: if (samples && !initialized) {
         if (samples.length === 0) {
             depth_from = 0;
@@ -76,6 +78,7 @@
                     {#if file_path}
                         <ImagePreview
                             {file_path}
+                            bind:this={previewRef}
                             on:crop={(e) => cropped_image = e.detail.dataUrl}
                         />
                     {:else}
@@ -85,6 +88,9 @@
 
                 <button on:click={pickFile}>
                     {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                </button>
+                <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+                    Usar imagen completa
                 </button>
             </div>
 

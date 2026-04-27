@@ -48,7 +48,7 @@
             </button>
             <button
                 on:click={() => dispatch('exportSample', { id: sampleId })}
-                disabled={true}
+                disabled={!sample}
             >
                 Export
             </button>

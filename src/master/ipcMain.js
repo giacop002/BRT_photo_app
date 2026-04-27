@@ -3,6 +3,7 @@ const { createProbe, getProbes, deleteProbe } = require('./db/probeService')
 const { createSample, getSamplesByProbe, getSampleById, deleteSample } = require('./db/sampleService')
 const { createObservation, getObservationsBySample, deleteObservation } = require('./db/observationService')
 const { copyImageToLocal, getImagesDir, selectImageFile, saveBase64Image } = require('./fileStorage')
+const { exportSample, exportAllSamples } = require('./export/exportToPdf')
 
 function setupIpcHandlers() {
   ipcMain.handle('create-probe', async (__, data) => {
@@ -64,6 +65,15 @@ function setupIpcHandlers() {
 
   ipcMain.handle('get-sample-by-id', async (__, sample_id) => {
     return getSampleById(sample_id)
+  })
+
+  ipcMain.handle('export-sample', async (__, data) => {
+    const { sample_id, probe_id } = data;
+    return await exportSample(sample_id, probe_id);
+  })
+
+  ipcMain.handle('export-all-samples', async (__, probe_id) => {
+    return await exportAllSamples(probe_id);
   })
 }
 

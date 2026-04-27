@@ -23,7 +23,7 @@
 
   <div class="actions">
     <button on:click={() => dispatch('click')}>Detail</button>
-    <button on:click={() => dispatch('export')} disabled={true}>Export</button>
+    <button on:click={() => dispatch('export')} disabled={!sample}>Export</button>
     <button on:click={() => dispatch('delete')}>Delete</button>
   </div>
 </div>

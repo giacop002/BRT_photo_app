@@ -75,7 +75,7 @@
                         + Add Sample
                     </button>
                     <button class="export btn"
-                            disabled={true}
+                            disabled={!selectedProbeId || samples.length === 0}
                             on:click={handleExportAllSamples}
                     >
                         Export all samples

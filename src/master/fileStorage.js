@@ -32,6 +32,23 @@ function generateFileName(originalPath) {
     return `${id}${ext}`;
 }
 
+function copyLogoToLocal() {
+    const logoPath = path.join(__dirname, '..', 'assets', 'fitzroy-minerals-logo.png');
+    const imagesDir = getImagesDir();
+    const destinationPath = path.join(imagesDir, 'logo.png');
+
+    if (!fs.existsSync(destinationPath)) {
+        fs.copyFileSync(logoPath, destinationPath);
+    }
+
+    return destinationPath;
+}
+
+function getLogoPath() {
+    const imagesDir = getImagesDir();
+    return path.join(imagesDir, 'logo.png');
+}
+
 function copyImageToLocal(originalPath) {
     if (!originalPath) {
         throw new Error('Ruta de archivo inválida.');
@@ -92,5 +109,7 @@ module.exports = {
     copyImageToLocal,
     getImagesDir,
     selectImageFile,
-    saveBase64Image
+    saveBase64Image,
+    copyLogoToLocal,
+    getLogoPath
 };

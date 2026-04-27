@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const { initDB } = require('./src/master/db/db')
 const { setupIpcHandlers } = require('./src/master/ipcMain')
+const { copyLogoToLocal } = require('./src/master/fileStorage')
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -29,6 +30,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   initDB()
   setupIpcHandlers()
+  copyLogoToLocal()
   createWindow()
 
   app.on('activate', () => {

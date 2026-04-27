@@ -18,6 +18,12 @@ function getProbes() {
   return stmt.all()
 }
 
+function getProbeById(probe_id) {
+  const db = getDB()
+  const stmt = db.prepare('SELECT * FROM probes WHERE id = ?')
+  return stmt.get(probe_id)
+}
+
 function deleteProbe(probe_id) {
   const db = getDB()
   const stmt = db.prepare('DELETE FROM probes WHERE id = ?')
@@ -27,5 +33,6 @@ function deleteProbe(probe_id) {
 module.exports = {
   createProbe,
   getProbes,
+  getProbeById,
   deleteProbe
 }

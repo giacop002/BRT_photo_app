@@ -89,9 +89,14 @@
                 <button on:click={pickFile}>
                     {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
                 </button>
-                <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
-                    Usar imagen completa
-                </button>
+                <div class="adjust-crop">
+                    <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+                        Use full image
+                    </button>
+                    <button on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
+                        Reset crop
+                    </button>
+                </div>
             </div>
 
             <div class="right">
@@ -174,5 +179,15 @@
 
     .cancel {
         background: #ccc;
+    }
+
+    .adjust-crop {
+        display: flex;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .adjust-crop button {
+        flex: 1;
     }
 </style>

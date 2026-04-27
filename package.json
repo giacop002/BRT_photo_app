@@ -1,7 +1,7 @@
 {
   "name": "brt_photo_app",
-  "version": "1.0.3",
-  "description": "UI (frontend) Svelte - formulario subir foto + metadata - tabla/listado de muestras - vista detalle con imagen - campo de observaciones",
+  "version": "1.9.8",
+  "description": "A photo metadata management application built with Electron and Svelte.",
   "homepage": "https://github.com/giacop002/BRT_photo_app#readme",
   "bugs": {
     "url": "https://github.com/giacop002/BRT_photo_app/issues"

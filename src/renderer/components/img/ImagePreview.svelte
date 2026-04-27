@@ -16,6 +16,10 @@
   export function maximizeCrop() {
     cropRef?.maximizeCrop();
   }
+
+  export function resetCrop() {
+    cropRef?.resetCrop();
+  }
 </script>
 
 <div class="container">

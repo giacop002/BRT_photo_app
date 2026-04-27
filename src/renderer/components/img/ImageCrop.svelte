@@ -106,10 +106,16 @@
   }
 
   function setDefaultCrop() {
-    cropBox.width = Math.min(200, wrapBox.width);
-    cropBox.height = Math.min(150, wrapBox.height);
-    cropBox.top = 0;
-    cropBox.left = 0;
+    cropBox = {
+      ...cropBox,
+      width: Math.min(200, wrapBox.width),
+      height: Math.min(150, wrapBox.height),
+      top: 0,
+      left: 0,
+      x: 0,
+      y: 0,
+      isMove: false
+    };
   }
 
   function setCoverBox() {
@@ -275,6 +281,14 @@
     cropBox.width = wrapBox.width;
     cropBox.height = wrapBox.height;
 
+    setCoverBox();
+    crop();
+  }
+
+  export function resetCrop() {
+    if (!wrapBox.width || !wrapBox.height) return;
+
+    setDefaultCrop();
     setCoverBox();
     crop();
   }

@@ -2,8 +2,6 @@
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
 
   export let src;
-  // export let width;
-  // export let height;
 
   const dispatch = createEventDispatcher();
 
@@ -22,13 +20,6 @@
   let imgData = "";
   let minSize = MIN_CROP_SIZE;
   let elWrap;
-
-  // // 整体容器
-  //   let container = {
-  //       width: width || 0,
-  //       height: height || 0
-  //   };
-  // 裁剪容器
   let wrapBox = {
     top: 0,
     width: 0,
@@ -36,27 +27,22 @@
     x: 0,
     y: 0
   };
-  // 原图片
   let originImg = null;
 
-  // 图片属性
   let scale = {
     width: 0,
     height: 0,
     ratio: 1
   };
 
-  // 预览块
   let cropBox = Object.assign({}, DEFAULT_CROP_BOX);
 
-  // 缩放块
   let zoomBox = {
     x: 0,
     y: 0,
     isMove: false
   };
 
-  // 阴影遮罩块
   let coverBoxs = [
     { left: "0", width: "0", height: "0" }, // top
     { left: "0", width: "0" }, // right
@@ -78,16 +64,6 @@
 
   $: start(src);
 
-    // function updateContainerSize() {
-    //     if (!elWrap) return
-
-    //     const rect = elWrap.parentElement.getBoundingClientRect()
-
-    //     container.width = rect.width
-    //     container.height = rect.height
-    // }
-
-  // 设置裁剪容器大小位置
   function setWrapBox() {
     if (!scale.width || !scale.height) return null;
     const rect = elWrap.parentElement.getBoundingClientRect()
@@ -115,7 +91,6 @@
     scale.ratio = scale.width / width;
   }
 
-  // 设置裁剪容器位置
   function setWrapPosition() {
     let x, y;
     const el = elWrap;
@@ -130,7 +105,6 @@
     }
   }
 
-  // 设置默认裁剪框
   function setDefaultCrop() {
     cropBox.width = Math.min(200, wrapBox.width);
     cropBox.height = Math.min(150, wrapBox.height);
@@ -138,7 +112,6 @@
     cropBox.left = 0;
   }
 
-  // 设置阴影遮挡块
   function setCoverBox() {
     function nonnegative(val) {
       return val < 0 ? 0 : val;
@@ -158,10 +131,9 @@
     bottom.height =
       nonnegative(wrapBox.height - cropBox.top - cropBox.height) + "px";
 
-    coverBoxs[0] = top; // fix: 更新视图赋值
+    coverBoxs[0] = top;
   }
 
-  // 生成裁剪后图片
   function createImg() {
     const canvas = document.createElement("canvas"),
       ctx = canvas.getContext("2d");
@@ -184,7 +156,6 @@
         });
     }
 
-  // 裁剪框开始移动
   function cropMoveStart(e) {
     e.preventDefault();
     cropBox.x = e.screenX;
@@ -192,13 +163,11 @@
     cropBox.isMove = true;
   }
 
-  // 裁剪框移动结束
   function cropMoveEnd(e) {
     e.preventDefault();
     cropBox.isMove = false;
   }
 
-  // 裁剪框移动
   function cropMove(e) {
     e.preventDefault();
     const { x, y, left, top, width, height, isMove } = cropBox;
@@ -217,19 +186,16 @@
     crop();
   }
 
-  // 缩放框开始移动
   function zoomMoveStart(e) {
     e.preventDefault();
     zoomBox.isMove = true;
   }
 
-  // 缩放框移动结束
   function zoomMoveEnd(e) {
     e.preventDefault();
     zoomBox.isMove = false;
   }
 
-  // 缩放框移动
   function zoomMove(e) {
     e.preventDefault();
     const { isMove } = zoomBox,
@@ -286,15 +252,11 @@
   }
 
     onMount(() => {
-        // updateContainerSize()
-
-        // window.addEventListener('resize', updateContainerSize)
         document.addEventListener("mouseup", zoomMoveEnd);
         document.addEventListener("mousemove", zoomMove);
     });
 
     onDestroy(() => {
-        // window.removeEventListener('resize', updateContainerSize)
         document.removeEventListener("mouseup", zoomMoveEnd);
         document.removeEventListener("mousemove", zoomMove);
     });
@@ -308,7 +270,6 @@
         <img src={imgSrc} alt="img-crop" />
       {/if}
 
-      <!-- 裁剪显示容器 -->
       <div class="crop-box" style={cropBoxStyle}>
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-mouse-events-have-key-events -->
@@ -323,7 +284,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="zoom-box" on:mousedown={zoomMoveStart} />
       </div>
-      <!-- 阴影遮挡块 -->
+
       <div class="cover-wrap">
         {#each coverBoxs as style}
           <div class="cover-box" style={obj2style(style)} />
@@ -363,7 +324,7 @@
         height: 100%;
         border: 2px solid rgba(255, 255, 255, 0.6);
         box-sizing: border-box;
-        background: rgba(0, 0, 0, 0); // fix: ie10 无背景bug
+        background: rgba(0, 0, 0, 0);
         cursor: move;
       }
 

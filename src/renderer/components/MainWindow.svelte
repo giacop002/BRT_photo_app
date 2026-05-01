@@ -3,11 +3,13 @@
     import SampleList from "./samples/SampleList.svelte";
     import SampleCreateForm from "./samples/SampleCreateForm.svelte";
     import SampleDetail from "./samples/SampleDetail.svelte";
+    import logo from "../../assets/fitzroy-minerals-logo.png";
 
     export let samples = [];
     export let selectedSampleId = null;
     export let loadingSamples = false;
     export let selectedProbeId = null;
+    export let selectedProbeName = null;
 
     let isCreatingSample = false;
 
@@ -61,13 +63,16 @@
             />
         {:else}
             <div class="header">
-                <h2>
-                {#if (!selectedProbeId)}
-                    No probe selected
-                {:else}
-                    Probe {selectedProbeId}
-                {/if}
-                </h2>
+                <div class="title">
+                    <img src={logo} alt="Logo" />
+                    <h2>
+                    {#if (!selectedProbeId)}
+                        No probe selected
+                    {:else}
+                        Probe {selectedProbeName} - Samples
+                    {/if}
+                    </h2>
+                </div>
                 <div class="button-box">
                     <button class="create btn"
                             disabled={!selectedProbeId}
@@ -125,12 +130,24 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding: 10px;
+        padding: 20px;
         border-bottom: 1px solid #eee;
     }
 
     .empty {
         padding: 20px;
         color: #777;
+    }
+
+    .title {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .title img {
+        height: 40px;
     }
 </style>

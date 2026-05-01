@@ -6,6 +6,7 @@
   let samples = [];
 
   let selectedProbeId = null;
+  let selectedProbeName = null;
   let selectedSampleId = null;
 
   let loadingSamples = false;
@@ -14,8 +15,9 @@
     probes = await window.api.getProbes();
   }
 
-  async function handleSelectProbe(id) {
+  async function handleSelectProbe({ id, name }) {
     selectedProbeId = id;
+    selectedProbeName = name;
     selectedSampleId = null;
 
     loadingSamples = true;
@@ -23,10 +25,10 @@
     loadingSamples = false;
   }
 
-  async function handleCreateProbe(data) {
-    console.log('Creating probe with data:', data);
-    await window.api.createProbe(data);
+  async function handleCreateProbe({ name }) {
+    let new_probe_id = await window.api.createProbe({ name });
     await loadProbes();
+    handleSelectProbe({ id: new_probe_id, name });
   }
 
   async function handleDeleteProbe(id) {
@@ -113,6 +115,7 @@
     on:exportThisSample={(e) => handleExportThisSample(e.detail.id)}
     on:backToList={handleBackToList}
     {selectedProbeId}
+    {selectedProbeName}
 
   />
 </div>

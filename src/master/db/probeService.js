@@ -13,7 +13,7 @@ function getProbes() {
   const db = getDB()
   const stmt = db.prepare(`
     SELECT * FROM probes
-    ORDER BY created_at DESC
+    ORDER BY name
     `)
   return stmt.all()
 }

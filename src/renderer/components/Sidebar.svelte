@@ -9,8 +9,8 @@
   let newProbeName = ''
   let createInput
 
-  function handleSelect(id) {
-    dispatch('selectProbe', id)
+  function handleSelect(id, name) {
+    dispatch('selectProbe', { id, name })
   }
 
   function handleDelete(id, event) {
@@ -56,8 +56,9 @@
       class="input"
       bind:this={createInput}
       bind:value={newProbeName}
-      placeholder="Nombre de la sonda"
+      placeholder="Drill Hole"
       on:keydown={handleKey}
+      on:blur={cancelCreate}
     />
   {/if}
 
@@ -67,7 +68,7 @@
     {:else}
       {#each probes as probe}
         <div class="item {probe.id === selectedProbeId ? 'selected' : ''}">
-          <button class="name" on:click={() => handleSelect(probe.id)}>
+          <button class="name" on:click={() => handleSelect(probe.id, probe.name)}>
             {probe.name}
           </button>
           <button class="delete" on:click={(e) => handleDelete(probe.id, e)}>X</button>
@@ -120,7 +121,6 @@
   .input {
     padding: 8px 10px;
     margin: 8px;
-    width: calc(100% - 16px);
     background: #2a2a2a;
     border: 1px solid #444;
     color: white;

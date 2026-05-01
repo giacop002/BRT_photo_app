@@ -1,9 +1,37 @@
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, dialog } = require('electron');
 const { getSampleById, getSamplesByProbe } = require('../db/sampleService');
 const { getProbeById } = require('../db/probeService');
 const { buildSampleHTML, buildAllSamplesHTML } = require('./buildHtml');
 const path = require('path');
+const fs = require('fs');
 const { app } = require('electron');
+
+async function exportSampleToPNG(html, outputPath) {
+  const win = new BrowserWindow({
+    show: false,
+    width: 1754,
+    height: 1240,
+    webPreferences: {
+      offscreen: true
+    }
+  });
+
+  await win.loadURL(
+    'data:text/html;charset=utf-8,' + encodeURIComponent(html),
+    {
+      baseURLForDataURL: `file://${app.getAppPath()}/`
+    }
+  );
+
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  const image = await win.webContents.capturePage();
+  const buffer = image.toPNG();
+
+  fs.writeFileSync(outputPath, buffer);
+
+  win.close();
+}
 
 async function exportSampleToPDF(html, outputPath) {
   const win = new BrowserWindow({
@@ -13,34 +41,51 @@ async function exportSampleToPDF(html, outputPath) {
     }
   });
 
-  await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
+  await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html),
+    {
+      baseURLForDataURL: `file://${app.getAppPath()}/`
+    }
+  );
 
   const pdf = await win.webContents.printToPDF({
-    printBackground: true
+    printBackground: true,
+    landscape: true,
+    pageSize: 'A4',
+    margins: {
+      marginType: 'none'
+    },
   });
 
-  require('fs').writeFileSync(outputPath, pdf);
+  fs.writeFileSync(outputPath, pdf);
 
   win.close();
 }
 
-async function  exportSample(sample_id, probe_id) {
-    try {
-        const sample = getSampleById(sample_id);
-        const probe = getProbeById(probe_id);
+async function exportSample(sample_id, probe_id) {
+  try {
+    const sample = getSampleById(sample_id);
+    const probe = getProbeById(probe_id);
 
-        const html = buildSampleHTML({ sample, probe });
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Export Sample to PNG',
+      defaultPath: `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.png`,
+      filters: [{ name: 'PNG', extensions: ['png'] }]
+    });
 
-        const outputPath = path.join(
-        app.getPath('documents'),
-        `sample-${sample.id}.pdf`
-        );
+    if (canceled || !filePath) {
+      return { success: false, canceled: true };
+    }
 
-        await exportSampleToPDF(html, outputPath);
+    const finalPath = filePath.endsWith('.png') ? filePath : filePath + '.png';
 
-        return { success: true, path: outputPath };
+    const html = buildSampleHTML({ sample, probe });
+
+    await exportSampleToPNG(html, finalPath);
+
+    return { success: true, path: finalPath };
+
   } catch (err) {
-        return { success: false, error: err.message };
+    return { success: false, error: err.message };
   }
 }
 
@@ -49,16 +94,40 @@ async function exportAllSamples(probe_id) {
     const samples = getSamplesByProbe(probe_id);
     const probe = getProbeById(probe_id);
 
-    const html = buildAllSamplesHTML({ samples, probe });
+    if (!samples.length) {
+      return { success: false, error: 'No samples to export' };
+    }
 
-    const outputPath = path.join(
-      app.getPath('documents'),
-      `probe-${probe.id}-samples.pdf`
-    );
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Export Probe Samples',
+      defaultPath: `${probe.name.replace(/\s+/g, '_')}.pdf`,
+      filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
 
-    await exportSampleToPDF(html, outputPath);
+    if (canceled || !filePath) {
+      return { success: false, canceled: true };
+    }
 
-    return { success: true, path: outputPath };
+    const finalPath = filePath.endsWith('.pdf') ? filePath : filePath + '.pdf';
+
+    const htmlAll = buildAllSamplesHTML({ samples, probe });
+
+    await exportSampleToPDF(htmlAll, finalPath);
+
+    const dir = path.dirname(finalPath);
+
+    for (const sample of samples) {
+      const html = buildSampleHTML({ sample, probe });
+
+      const pngPath = path.join(
+        dir,
+        `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.png`
+      );
+
+      await exportSampleToPNG(html, pngPath);
+    }
+
+    return { success: true, path: finalPath };
   } catch (err) {
     return { success: false, error: err.message };
   }

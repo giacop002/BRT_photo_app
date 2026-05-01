@@ -36,6 +36,8 @@
     }
 
     onMount(loadData);
+
+    // $: console.log('image path:', sample?.image_path);
 </script>
 
 <div class="container">

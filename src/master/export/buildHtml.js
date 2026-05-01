@@ -5,33 +5,41 @@ function buildSampleHTML({ sample, probe }) {
   <html>
     <head>
       <style>
+
+        html, body {
+          overflow: hidden;
+        }
+
         body {
           font-family: Arial;
-          padding: 40px;
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          gap: 20px;
+          height: 100vh;
         }
 
         .header {
-          text-align: center;
-          margin-bottom: 20px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
         }
 
         .logo {
-          height: 60px;
+          height: 50px;
         }
 
         .image {
-          text-align: center;
-          margin: 20px 0;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .image img {
-          max-width: 100%;
-          max-height: 400px;
-        }
-
-        .meta {
-          margin-top: 20px;
-          font-size: 14px;
+          max-width: 100vw;
+          height: 80vh;
         }
       </style>
     </head>
@@ -39,37 +47,32 @@ function buildSampleHTML({ sample, probe }) {
     <body>
       <div class="header">
         <img class="logo" src="file://${getLogoPath()}" />
-        <h2>${probe.name}</h2>
-        <p>${sample.sample_date || ''}</p>
+        <h2>Probe ${probe.name}</h2>
+        <h3>Depth: ${sample.depth_from} - ${sample.depth_to} m</h3>
+        <h4>${sample.sample_date || ''}</h4>
       </div>
 
       <div class="image">
         <img src="file://${sample.image_path}" />
       </div>
 
-      <div class="meta">
-        <p><strong>Depth:</strong> ${sample.depth_from} - ${sample.depth_to}</p>
-      </div>
     </body>
   </html>
   `;
 }
 
 function buildAllSamplesHTML({ samples, probe }) {
-  const pages = samples.map(sample => `
+  const pages = samples.map((sample, index) => `
     <div class="page">
       <div class="header">
         <img class="logo" src="file://${getLogoPath()}" />
-        <h2>${probe.name}</h2>
-        <p>${sample.sample_date || ''}</p>
+        <h2>Probe ${probe.name}</h2>
+        <h3>Depth: ${sample.depth_from} - ${sample.depth_to} m</h3>
+        <h4>${sample.sample_date || ''}</h4>
       </div>
 
       <div class="image">
         <img src="file://${sample.image_path}" />
-      </div>
-
-      <div class="meta">
-        <p><strong>Depth:</strong> ${sample.depth_from} - ${sample.depth_to}</p>
       </div>
     </div>
   `).join('');
@@ -80,43 +83,34 @@ function buildAllSamplesHTML({ samples, probe }) {
       <style>
         body {
           font-family: Arial;
-        }
-
-        .page {
-          page-break-after: always;
-          padding: 40px;
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          gap: 20px;
+          height: 100vh;
         }
 
         .header {
-          text-align: center;
-          margin-bottom: 20px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
         }
 
         .logo {
-          height: 60px;
+          height: 50px;
         }
 
         .image {
-          text-align: center;
-          margin: 20px 0;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .image img {
           max-width: 100%;
-          max-height: 400px;
-        }
-
-        .meta {
-          margin-top: 20px;
-          font-size: 14px;
-        }
-
-        .page {
-            page-break-after: always;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100vh;
+          height: 80vh;
         }
       </style>
     </head>

@@ -33,7 +33,8 @@ function generateFileName(originalPath) {
 }
 
 function copyLogoToLocal() {
-    const logoPath = path.join(__dirname, '..', 'assets', 'fitzroy-minerals-logo.png');
+    const logoPath = path.join(app.getAppPath(), 'src', 'assets', 'fitzroy-minerals-logo.png');
+
     const imagesDir = getImagesDir();
     const destinationPath = path.join(imagesDir, 'logo.png');
 

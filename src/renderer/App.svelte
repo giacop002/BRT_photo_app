@@ -70,6 +70,7 @@
     }
 
     const result = await window.api.exportAllSamples(selectedProbeId);
+    if (result.canceled) return;
     if (result.success) {
       alert('Samples exported successfully');
     } else {
@@ -80,6 +81,7 @@
   async function handleExportThisSample(id) {
     const data = { sample_id: id, probe_id: selectedProbeId };
     const result = await window.api.exportSample(data);
+    if (result.canceled) return;
     if (result.success) {
       alert('Sample exported successfully');
     } else {

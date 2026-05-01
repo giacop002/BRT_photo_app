@@ -11,15 +11,12 @@
     let newNote = '';
 
     async function loadData() {
-        console.log('Loading data for sample ID:', sampleId);
         sample = await window.api.getSampleById(sampleId);
         observations = await window.api.getObservationsBySample(sampleId);
     }
 
     async function handleAddObservation() {
         if (!newNote.trim()) return;
-
-        console.log('Adding observation for sample ID:', sampleId, 'Note:', newNote);
 
         await window.api.createObservation({
             sample_id: sampleId,
@@ -36,8 +33,6 @@
     }
 
     onMount(loadData);
-
-    // $: console.log('image path:', sample?.image_path);
 </script>
 
 <div class="container">

@@ -23,7 +23,6 @@ const createWindow = () => {
     ? path.join(__dirname, 'dist', 'index.html')
     : path.join(app.getAppPath(), 'dist', 'index.html');
 
-  console.log('Loading index.html from:', indexPath);
   win.loadURL(`file://${indexPath}`);
 }
 

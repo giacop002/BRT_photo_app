@@ -141,18 +141,27 @@
   }
 
   function createImg() {
-    const canvas = document.createElement("canvas"),
-      ctx = canvas.getContext("2d");
-    canvas.width = cropBox.width;
-    canvas.height = cropBox.height;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const scaleRatio = scale.ratio;
+
+    canvas.width = cropBox.width * scaleRatio;
+    canvas.height = cropBox.height * scaleRatio;
+
     ctx.drawImage(
       originImg,
-      -cropBox.left,
-      -cropBox.top,
-      wrapBox.width,
-      wrapBox.height
+      cropBox.left * scaleRatio,
+      cropBox.top * scaleRatio,
+      cropBox.width * scaleRatio,
+      cropBox.height * scaleRatio,
+      0,
+      0,
+      canvas.width,
+      canvas.height
     );
-    imgData = canvas.toDataURL();
+
+    imgData = canvas.toDataURL("image/png");
   }
 
     function crop() {

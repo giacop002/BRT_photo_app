@@ -1,6 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import ImagePreview from "../img/ImagePreview.svelte";
+    import { get } from "svelte/store";
 
     export let samples = [];
     export let isCreatingSample = false;
@@ -17,9 +18,15 @@
 
     let previewRef;
 
+    function getToday() {
+        return new Date().toISOString().slice(0, 10);
+    }
+
     $: if (samples && !initialized) {
         if (samples.length === 0) {
             depth_from = 0;
+            depth_to = 1;
+            sample_date = getToday();
         } else {
             const maxSample = samples.reduce((max, s) => {
                 const to = s.depth_to ?? 0;
@@ -27,7 +34,18 @@
             }, samples[0]);
 
             depth_from = maxSample.depth_to ?? 0;
+            depth_to = depth_from + 1;
+            const latestSample = samples.reduce((latest, s) => {
+                if (!s.sample_date) return latest;
+                if (!latest) return s;
+                return new Date(s.sample_date) > new Date(latest.sample_date) ? s : latest;
+            }, null);
+
+            sample_date = latestSample?.sample_date
+                ? latestSample.sample_date.slice(0, 10)
+                : new Date().toISOString().slice(0, 10);
         }
+
         initialized = true;
     }
 

@@ -6,33 +6,6 @@ const path = require('path');
 const fs = require('fs');
 const { app } = require('electron');
 
-async function exportSampleToPNG(html, outputPath) {
-  const win = new BrowserWindow({
-    show: false,
-    width: 1754,
-    height: 1240,
-    webPreferences: {
-      offscreen: true
-    }
-  });
-
-  await win.loadURL(
-    'data:text/html;charset=utf-8,' + encodeURIComponent(html),
-    {
-      baseURLForDataURL: `file://${app.getAppPath()}/`
-    }
-  );
-
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  const image = await win.webContents.capturePage();
-  const buffer = image.toPNG();
-
-  fs.writeFileSync(outputPath, buffer);
-
-  win.close();
-}
-
 async function exportSampleToPDF(html, outputPath) {
   const win = new BrowserWindow({
     show: false,
@@ -67,20 +40,20 @@ async function exportSample(sample_id, probe_id) {
     const probe = getProbeById(probe_id);
 
     const { canceled, filePath } = await dialog.showSaveDialog({
-      title: 'Export Sample to PNG',
-      defaultPath: `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.png`,
-      filters: [{ name: 'PNG', extensions: ['png'] }]
+      title: 'Export Sample to PDF',
+      defaultPath: `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.pdf`,
+      filters: [{ name: 'PDF', extensions: ['pdf'] }]
     });
 
     if (canceled || !filePath) {
       return { success: false, canceled: true };
     }
 
-    const finalPath = filePath.endsWith('.png') ? filePath : filePath + '.png';
+    const finalPath = filePath.endsWith('.pdf') ? filePath : filePath + '.pdf';
 
     const html = buildSampleHTML({ sample, probe });
 
-    await exportSampleToPNG(html, finalPath);
+    await exportSampleToPDF(html, finalPath);
 
     return { success: true, path: finalPath };
 
@@ -108,26 +81,26 @@ async function exportAllSamples(probe_id) {
       return { success: false, canceled: true };
     }
 
-    const finalPath = filePath.endsWith('.pdf') ? filePath : filePath + '.pdf';
+    const finalPathAll = filePath.endsWith('.pdf') ? filePath : filePath + '.pdf';
 
     const htmlAll = buildAllSamplesHTML({ samples, probe });
 
-    await exportSampleToPDF(htmlAll, finalPath);
+    await exportSampleToPDF(htmlAll, finalPathAll);
 
-    const dir = path.dirname(finalPath);
+    const dir = path.dirname(finalPathAll);
 
     for (const sample of samples) {
       const html = buildSampleHTML({ sample, probe });
 
-      const pngPath = path.join(
+      const finalPath = path.join(
         dir,
-        `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.png`
+        `${probe.name.replace(/\s+/g, '_')}-${sample.depth_from}-${sample.depth_to}.pdf`
       );
 
-      await exportSampleToPNG(html, pngPath);
+      await exportSampleToPDF(html, finalPath);
     }
 
-    return { success: true, path: finalPath };
+    return { success: true, path: finalPathAll };
   } catch (err) {
     return { success: false, error: err.message };
   }

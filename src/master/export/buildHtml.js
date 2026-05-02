@@ -5,23 +5,30 @@ function buildSampleHTML({ sample, probe }) {
   <html>
     <head>
       <style>
+        @page {
+          size: A4 landscape;
+          margin: 0;
+        }
 
         html, body {
+          margin: 0;
+          padding: 0;
+          width: 297mm;
+          height: 210mm;
           overflow: hidden;
+          font-family: Arial;
         }
 
         body {
-          font-family: Arial;
           display: flex;
           flex-direction: column;
-          justify-content: start;
-          gap: 20px;
-          height: 100vh;
+          justify-content: space-between;
+          padding: 20px;
+          box-sizing: border-box;
         }
 
         .header {
           display: flex;
-          flex-direction: row;
           justify-content: space-between;
           align-items: center;
         }
@@ -38,8 +45,9 @@ function buildSampleHTML({ sample, probe }) {
         }
 
         .image img {
-          max-width: 100vw;
-          height: 80vh;
+          max-width: 100%;
+          max-height: 90vh;
+          object-fit: contain;
         }
       </style>
     </head>
@@ -62,7 +70,7 @@ function buildSampleHTML({ sample, probe }) {
 }
 
 function buildAllSamplesHTML({ samples, probe }) {
-  const pages = samples.map((sample, index) => `
+  const pages = samples.map(sample => `
     <div class="page">
       <div class="header">
         <img class="logo" src="file://${getLogoPath()}" />
@@ -81,18 +89,36 @@ function buildAllSamplesHTML({ samples, probe }) {
   <html>
     <head>
       <style>
-        body {
+        @page {
+          size: A4 landscape;
+          margin: 0;
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
           font-family: Arial;
+        }
+
+        .page {
+          width: 297mm;
+          height: 210mm;
+          box-sizing: border-box;
+          padding: 20px;
+
           display: flex;
           flex-direction: column;
-          justify-content: start;
-          gap: 20px;
-          height: 100vh;
+          justify-content: space-between;
+
+          page-break-after: always;
+        }
+
+        .page:last-child {
+          page-break-after: auto;
         }
 
         .header {
           display: flex;
-          flex-direction: row;
           justify-content: space-between;
           align-items: center;
         }
@@ -110,7 +136,8 @@ function buildAllSamplesHTML({ samples, probe }) {
 
         .image img {
           max-width: 100%;
-          height: 80vh;
+          max-height: 85vh;
+          object-fit: contain;
         }
       </style>
     </head>

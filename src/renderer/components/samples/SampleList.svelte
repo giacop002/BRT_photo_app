@@ -36,7 +36,6 @@
 
 <style>
   .list {
-    height: 100%;
     overflow-y: auto;
   }
 

@@ -175,6 +175,7 @@
     display: flex;
     flex-direction: column;
     border-right: 1px solid #333;
+    margin-right: 1vw;
   }
 
   .header {

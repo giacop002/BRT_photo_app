@@ -49,8 +49,12 @@
     selectedSampleId = id;
   }
 
+  function handleGoBack() {
+    selectedSampleId = null;
+  }
+
   async function handleCreateSample(data) {
-    const { file_path, cropped_image, ...rest } = data
+    const { file_path, cropped_image, ...rest } = data;
 
     await window.api.createSample({
       ...rest,
@@ -59,17 +63,14 @@
       cropped_image: cropped_image
     })
 
-    await handleSelectProbe(selectedProbeId)
+    await loadProbes();
+    handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
   }
 
   async function handleDeleteSample(id) {
     await window.api.deleteSample(id);
-    await handleSelectProbe(selectedProbeId);
-  }
-
-  async function handleBackToList() {
-    selectedSampleId = null;
-    await handleSelectProbe(selectedProbeId);
+    await loadProbes();
+    handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
   }
 
   async function handleExportAllSamples() {
@@ -122,10 +123,9 @@
     on:deleteSample={(e) => handleDeleteSample(e.detail.id)}
     on:exportAllSamples={handleExportAllSamples}
     on:exportThisSample={(e) => handleExportThisSample(e.detail.id)}
-    on:backToList={handleBackToList}
+    on:goBack={handleGoBack}
     {selectedProbeId}
     {selectedProbeName}
-
   />
 </div>
 

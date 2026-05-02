@@ -1,5 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+  import rightArrowIcon from "../../../assets/iconArrowRight.svg";
+  import deleteIcon from "../../../assets/iconDelete.svg";
+  import exportIcon from "../../../assets/iconFileExport.svg";
 
   export let sample
   export let isSelected = false
@@ -10,7 +13,7 @@
 <div
   class="row {isSelected ? 'selected' : ''}"
 >
-  <img src={sample.image_path} alt="Sample preview" />
+  <img class="preview" src={sample.image_path} alt="Sample preview" />
 
   <div class="info">
     <div class="depth">
@@ -22,9 +25,18 @@
   </div>
 
   <div class="actions">
-    <button on:click={() => dispatch('click')}>Detail</button>
-    <button on:click={() => dispatch('export')} disabled={!sample}>Export</button>
-    <button on:click={() => dispatch('delete')}>Delete</button>
+    <button on:click={() => dispatch('click')}>
+      <img class="icon" src={rightArrowIcon} alt="Detail" />
+      Detail
+    </button>
+    <button on:click={() => dispatch('export')} disabled={!sample}>
+      <img class="icon" src={exportIcon} alt="Export" />
+      Export
+    </button>
+    <button on:click={() => dispatch('delete')}>
+      <img class="icon" src={deleteIcon} alt="Delete" />
+      Delete
+    </button>
   </div>
 </div>
 
@@ -35,7 +47,6 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
-    width: 100%;
     border: none;
     border-bottom: 1px solid #eee;
     background: transparent;
@@ -50,7 +61,7 @@
     background: #e0e0e0;
   }
 
-  img {
+  img.preview {
     width: 60px;
     height: 60px;
     object-fit: cover;
@@ -81,8 +92,15 @@
   }
 
   .actions button {
-    font-size: 12px;
-    padding: 4px 8px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+  }
+
+  img.icon {
+    width: 16px;
+    height: 16px;
   }
 </style>

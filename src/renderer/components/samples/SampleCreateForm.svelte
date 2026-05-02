@@ -2,8 +2,8 @@
     import { createEventDispatcher } from "svelte";
     import ImagePreview from "../img/ImagePreview.svelte";
 
-    export let isOpen = false;
     export let samples = [];
+    export let isCreatingSample = false;
 
     const dispatch = createEventDispatcher();
 
@@ -32,7 +32,10 @@
     }
 
     async function handleSubmit() {
-        if (!file_path) return;
+        if (!file_path) {
+            alert('Please select an image');
+            return;
+        }
         if (depth_from && depth_to && depth_from > depth_to) {
             alert('Depth from < depth to')
             return
@@ -51,6 +54,7 @@
 
     function handleCancel() {
         reset();
+        isCreatingSample = false;
         dispatch('close');
     }
 
@@ -68,63 +72,46 @@
     }
 </script>
 
-{#if isOpen}
-    <div class="container">
-        <h3>New Sample</h3>
-
-        <div class="content">
-            <div class="left">
-                <div class="preview">
-                    {#if file_path}
-                        <ImagePreview
-                            {file_path}
-                            bind:this={previewRef}
-                            on:crop={(e) => cropped_image = e.detail.dataUrl}
-                        />
-                    {:else}
-                        <div class="placeholder">No image selected</div>
-                    {/if}
-                </div>
-
-                <button on:click={pickFile}>
-                    {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                </button>
-                <div class="adjust-crop">
-                    <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
-                        Use full image
-                    </button>
-                    <button on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
-                        Reset crop
-                    </button>
-                </div>
-            </div>
-
-            <div class="right">
-                <p>Depth from:</p>
-                <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
-                <p>Depth to:</p>
-                <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
-                <p>Sample date:</p>
-                <input type="date" bind:value={sample_date} />
-
-                <div class="actions">
-                    <button class="save" on:click={handleSubmit}>Save</button>
-                    <button class="cancel" on:click={handleCancel}>Cancel</button>
-                </div>
-            </div>
+<div class="content">
+    <div class="left">
+        <div class="preview">
+            {#if file_path}
+                <ImagePreview
+                    {file_path}
+                    bind:this={previewRef}
+                    on:crop={(e) => cropped_image = e.detail.dataUrl}
+                />
+            {:else}
+                <div class="placeholder">No image selected</div>
+            {/if}
+        </div>
+        <button on:click={pickFile}>
+            {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
+        </button>
+        <div class="adjust-crop">
+            <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+                Use full image
+            </button>
+            <button on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
+                Reset crop
+            </button>
         </div>
     </div>
-{/if}
+    <div class="right">
+        <p>Depth from:</p>
+        <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
+        <p>Depth to:</p>
+        <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
+        <p>Sample date:</p>
+        <input type="date" bind:value={sample_date} />
+        <div class="actions">
+            <button class="save" on:click={handleSubmit}>Save</button>
+            <button class="cancel" on:click={handleCancel}>Cancel</button>
+        </div>
+    </div>
+</div>
 
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        padding: 16px;
-        gap: 16px;
-    }
-
     .content {
         display: flex;
         flex: 1;
@@ -152,7 +139,6 @@
         color: #888;
     }
 
-    /* RIGHT: form */
     .right {
         flex: 1;
         display: flex;
@@ -165,7 +151,7 @@
         border: 1px solid #ccc;
     }
 
-    /* botones */
+
     .actions {
         margin-top: auto;
         display: flex;

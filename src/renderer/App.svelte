@@ -37,6 +37,14 @@
     await loadProbes();
   }
 
+  async function handleRenameProbe({ id, name }) {
+    await window.api.renameProbe({ id, name });
+    await loadProbes();
+    if (selectedProbeId === id) {
+      selectedProbeName = name;
+    }
+  }
+
   function handleSelectSample(id) {
     selectedSampleId = id;
   }
@@ -102,6 +110,7 @@
     on:selectProbe={(e) => handleSelectProbe(e.detail)}
     on:createProbe={(e) => handleCreateProbe(e.detail)}
     on:deleteProbe={(e) => handleDeleteProbe(e.detail.id)}
+    on:renameProbe={(e) => handleRenameProbe(e.detail)}
   />
 
   <MainWindow

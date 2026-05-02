@@ -18,6 +18,12 @@ function getProbes() {
   return stmt.all()
 }
 
+function renameProbe({ id, name }) {
+  const db = getDB()
+  const stmt = db.prepare('UPDATE probes SET name = ? WHERE id = ?')
+  stmt.run(name, id)
+}
+
 function getProbeById(probe_id) {
   const db = getDB()
   const stmt = db.prepare('SELECT * FROM probes WHERE id = ?')
@@ -34,5 +40,6 @@ module.exports = {
   createProbe,
   getProbes,
   getProbeById,
-  deleteProbe
+  deleteProbe,
+  renameProbe
 }

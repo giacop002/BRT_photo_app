@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron/main')
-const { createProbe, getProbes, deleteProbe } = require('./db/probeService')
+const { createProbe, getProbes, deleteProbe, renameProbe } = require('./db/probeService')
 const { createSample, getSamplesByProbe, getSampleById, deleteSample } = require('./db/sampleService')
 const { createObservation, getObservationsBySample, deleteObservation } = require('./db/observationService')
 const { copyImageToLocal, getImagesDir, selectImageFile, saveBase64Image } = require('./fileStorage')
@@ -16,6 +16,10 @@ function setupIpcHandlers() {
 
   ipcMain.handle('delete-probe', async (__, probe_id) => {
     return deleteProbe(probe_id)
+  })
+
+  ipcMain.handle('rename-probe', async (__, data) => {
+    return renameProbe(data)
   })
 
   ipcMain.handle('create-sample', async (__, data) => {

@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   createProbe: (data) => ipcRenderer.invoke('create-probe', data),
   getProbes: () => ipcRenderer.invoke('get-probes'),
   deleteProbe: (probe_id) => ipcRenderer.invoke('delete-probe', probe_id),
+  renameProbe: (data) => ipcRenderer.invoke('rename-probe', data),
   createSample: (data) => ipcRenderer.invoke('create-sample', data),
   getSamplesByProbe: (probe_id) => ipcRenderer.invoke('get-samples-by-probe', probe_id),
   deleteSample: (sample_id) => ipcRenderer.invoke('delete-sample', sample_id),

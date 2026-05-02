@@ -1,9 +1,9 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
-  import plusIcon from '../../assets/iconPlus_White.svg'
-  import gearIcon from '../../assets/iconGear_White.svg'
-  import editIcon from '../../assets/iconEdit_White.svg'
-  import deleteIcon from '../../assets/iconDelete_White.svg'
+  import plusIcon from '@/assets/iconPlus_White.svg'
+  import gearIcon from '@/assets/iconGear_White.svg'
+  import editIcon from '@/assets/iconEdit_White.svg'
+  import deleteIcon from '@/assets/iconDelete_White.svg'
 
 
   export let probes = []

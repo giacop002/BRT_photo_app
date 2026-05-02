@@ -17,6 +17,10 @@
     cropRef?.maximizeCrop();
   }
 
+  export function getCroppedImage() {
+    return cropRef?.getFullResImage();
+  }
+
   export function resetCrop() {
     cropRef?.resetCrop();
   }

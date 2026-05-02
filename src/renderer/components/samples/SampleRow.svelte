@@ -1,8 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import rightArrowIcon from "../../../assets/iconArrowRight.svg";
-  import deleteIcon from "../../../assets/iconDelete.svg";
-  import exportIcon from "../../../assets/iconFileExport.svg";
+  import rightArrowIcon from "@/assets/iconArrowRight.svg";
+  import deleteIcon from "@/assets/iconDelete.svg";
+  import exportIcon from "@/assets/iconFileExport.svg";
 
   export let sample
   export let isSelected = false
@@ -17,7 +17,7 @@
 
   <div class="info">
     <div class="depth">
-      {sample.depth_from}m - {sample.depth_to}m
+      {sample.depth_from} - {sample.depth_to} m
     </div>
     <div class="date">
       {sample.sample_date || 'Unknown date'}

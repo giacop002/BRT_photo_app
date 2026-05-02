@@ -63,14 +63,17 @@
       cropped_image: cropped_image
     })
 
+    loadingSamples = true;
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
+    loadingSamples = false;
   }
 
   async function handleDeleteSample(id) {
     await window.api.deleteSample(id);
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
+    loadingSamples = false;
   }
 
   async function handleExportAllSamples() {
@@ -80,7 +83,9 @@
       return;
     }
 
+    loadingSamples = true;
     const result = await window.api.exportAllSamples(selectedProbeId);
+    loadingSamples = false;
     if (result.canceled) return;
     if (result.success) {
       alert('Samples exported successfully');
@@ -91,7 +96,9 @@
 
   async function handleExportThisSample(id) {
     const data = { sample_id: id, probe_id: selectedProbeId };
+    loadingSamples = true;
     const result = await window.api.exportSample(data);
+    loadingSamples = false;
     if (result.canceled) return;
     if (result.success) {
       alert('Sample exported successfully');

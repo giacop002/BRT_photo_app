@@ -140,7 +140,25 @@
     coverBoxs[0] = top;
   }
 
-  function createImg() {
+  function createPreviewImg() {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = cropBox.width;
+    canvas.height = cropBox.height;
+
+    ctx.drawImage(
+      originImg,
+      -cropBox.left,
+      -cropBox.top,
+      wrapBox.width,
+      wrapBox.height
+    );
+
+    imgData = canvas.toDataURL("image/jpeg", 0.7); // más liviano aún
+  }
+
+  function createFullResImg() {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -161,15 +179,19 @@
       canvas.height
     );
 
-    imgData = canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/png");
   }
 
-    function crop() {
-        createImg();
-        dispatch("crop", {
-            dataUrl: imgData
-        });
-    }
+  export function getFullResImage() {
+    return createFullResImg();
+  }
+
+  function crop() {
+    createPreviewImg();
+    dispatch("crop", {
+      dataUrl: imgData
+    });
+  }
 
   function cropMoveStart(e) {
     e.preventDefault();

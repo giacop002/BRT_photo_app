@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import ButtonBox from './ButtonBox.svelte';
-    import logo from "../../assets/fitzroy-minerals-logo.png";
+    import logo from "@/assets/fitzroy-minerals-logo.png";
 
     export let samples = [];
     export let selectedProbeId = null;

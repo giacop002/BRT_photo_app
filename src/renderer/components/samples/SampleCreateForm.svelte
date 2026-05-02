@@ -1,7 +1,10 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import ImagePreview from "../img/ImagePreview.svelte";
-    import { get } from "svelte/store";
+    import cropImgIcon from "@/assets/iconCropImg.svg";
+    import cropSqrIcon from "@/assets/iconCropSquare.svg";
+    import cancelIcon from "@/assets/iconX.svg";
+    import createIcon from "@/assets/iconPlus_White.svg";
 
     export let samples = [];
     export let isCreatingSample = false;
@@ -49,6 +52,37 @@
         initialized = true;
     }
 
+    // function createThumbnail(dataUrl) {
+    //     return new Promise((resolve) => {
+    //         const img = new Image();
+    //         img.src = dataUrl;
+
+    //         img.onload = () => {
+    //             const canvas = document.createElement("canvas");
+    //             const ctx = canvas.getContext("2d");
+
+    //             const maxSize = 120; // tamaño thumbnail
+
+    //             let { width, height } = img;
+
+    //             if (width > height) {
+    //                 height = height * (maxSize / width);
+    //                 width = maxSize;
+    //             } else {
+    //                 width = width * (maxSize / height);
+    //                 height = maxSize;
+    //             }
+
+    //             canvas.width = width;
+    //             canvas.height = height;
+
+    //             ctx.drawImage(img, 0, 0, width, height);
+
+    //             resolve(canvas.toDataURL("image/jpeg", 0.7));
+    //         };
+    //     });
+    // }
+
     async function handleSubmit() {
         if (!file_path) {
             alert('Please select an image');
@@ -59,9 +93,12 @@
             return
         }
 
+        // const thumbnail = await createThumbnail(cropped_image);
+
         dispatch('submit', {
             file_path,
-            cropped_image,
+            cropped_image: previewRef?.getCroppedImage(),
+            // thumbnail,
             depth_from: depth_from !== '' ? parseFloat(depth_from) : null,
             depth_to: depth_to !== '' ? parseFloat(depth_to) : null,
             sample_date: sample_date || null
@@ -103,28 +140,44 @@
                 <div class="placeholder">No image selected</div>
             {/if}
         </div>
-        <button on:click={pickFile}>
+    </div>
+    <div class="right">
+        <div class="inputs">
+            <div class="depth field">
+                <p>Depth from:</p>
+                <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
+            </div>
+            <div class="depth field">
+                <p>Depth to:</p>
+                <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
+            </div>
+            <div class="date field">
+                <p>Sample date:</p>
+                <input type="date" bind:value={sample_date} />
+            </div>
+        </div>
+        <button class="pick-img" on:click={pickFile}>
             {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
         </button>
         <div class="adjust-crop">
-            <button on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+            <button class="maximize-crop" on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+                <img class="icon" src={cropImgIcon} alt="Use full img icon" />
                 Use full image
             </button>
-            <button on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
+            <button class="reset-crop" on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
+                <img class="icon" src={cropSqrIcon} alt="Reset crop icon" />
                 Reset crop
             </button>
         </div>
-    </div>
-    <div class="right">
-        <p>Depth from:</p>
-        <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
-        <p>Depth to:</p>
-        <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
-        <p>Sample date:</p>
-        <input type="date" bind:value={sample_date} />
         <div class="actions">
-            <button class="save" on:click={handleSubmit}>Save</button>
-            <button class="cancel" on:click={handleCancel}>Cancel</button>
+            <button class="save" on:click={handleSubmit}>
+                <img class="icon" src={createIcon} alt="Save" />
+                Save
+            </button>
+            <button class="cancel" on:click={handleCancel}>
+                <img class="icon" src={cancelIcon} alt="Cancel" />
+                Cancel
+            </button>
         </div>
     </div>
 </div>
@@ -161,7 +214,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 16px;
     }
 
     .right input {
@@ -193,5 +246,10 @@
 
     .adjust-crop button {
         flex: 1;
+    }
+
+    img.icon {
+        width: 16px;
+        height: 16px;
     }
 </style>

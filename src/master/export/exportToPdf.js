@@ -9,6 +9,7 @@ const { app } = require('electron');
 async function exportSampleToPDF(html, outputPath) {
   const win = new BrowserWindow({
     show: false,
+    focusable: false,
     webPreferences: {
       offscreen: true
     }

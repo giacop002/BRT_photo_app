@@ -1,9 +1,16 @@
-const { ipcMain } = require('electron/main')
+const { ipcMain, BrowserWindow } = require('electron/main')
 const { createProbe, getProbes, deleteProbe, renameProbe } = require('./db/probeService')
 const { createSample, getSamplesByProbe, getSampleById, updateSample, deleteSample } = require('./db/sampleService')
 const { createObservation, getObservationsBySample, deleteObservation } = require('./db/observationService')
 const { copyImageToLocal, getImagesDir, selectImageFile, saveBase64Image } = require('./fileStorage')
 const { exportSample, exportAllSamples } = require('./export/exportToPdf')
+
+function focusMainWindow() {
+  const win = BrowserWindow.getAllWindows()[0];
+  if (win) {
+    win.focus();
+  }
+}
 
 function setupIpcHandlers() {
   ipcMain.handle('create-probe', async (__, data) => {
@@ -15,6 +22,7 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('delete-probe', async (__, probe_id) => {
+    focusMainWindow();
     return deleteProbe(probe_id)
   })
 
@@ -40,10 +48,12 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('delete-sample', async (__, sample_id) => {
+    focusMainWindow();
     return deleteSample(sample_id)
   })
 
   ipcMain.handle('update-sample', async (__, data) => {
+    focusMainWindow();
     return updateSample(data)
   })
 
@@ -77,10 +87,12 @@ function setupIpcHandlers() {
 
   ipcMain.handle('export-sample', async (__, data) => {
     const { sample_id, probe_id } = data;
+    focusMainWindow();
     return await exportSample(sample_id, probe_id);
   })
 
   ipcMain.handle('export-all-samples', async (__, probe_id) => {
+    focusMainWindow();
     return await exportAllSamples(probe_id);
   })
 }

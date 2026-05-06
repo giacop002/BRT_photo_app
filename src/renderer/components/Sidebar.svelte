@@ -36,7 +36,6 @@
   }
 
   async function handleRename(probe) {
-    window.focus();
     renamingId = probe.id
     renameValue = probe.name
     openMenuId = null
@@ -67,7 +66,6 @@
   }
 
   async function startCreate() {
-    window.focus();
     isCreating = true;
     newProbeName = 'BRT-DDH-';
 

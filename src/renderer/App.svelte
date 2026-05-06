@@ -29,14 +29,12 @@
     let new_probe_id = await window.api.createProbe({ name });
     await loadProbes();
     handleSelectProbe({ id: new_probe_id, name });
-    window.focus();
   }
 
   async function handleDeleteProbe(id) {
     await window.api.deleteProbe(id);
     selectedProbeId = null;
     await loadProbes();
-    window.focus();
   }
 
   async function handleRenameProbe({ id, name }) {
@@ -45,7 +43,6 @@
     if (selectedProbeId === id) {
       selectedProbeName = name;
     }
-    window.focus();
   }
 
   function handleSelectSample(id) {
@@ -70,11 +67,9 @@
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
     loadingSamples = false;
-    window.focus();
   }
 
   async function handleUpdateSample(data) {
-    console.log('Updating sample with data:', data);
 
     const response = await window.api.updateSample({
       sample_id: data.id,
@@ -83,8 +78,6 @@
       depth_to: data.depth_to,
       sample_date: data.sample_date
     });
-
-    console.log('Update sample response:', response);
 
     loadingSamples = true;
     await loadProbes();
@@ -97,7 +90,6 @@
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
     loadingSamples = false;
-    window.focus();
   }
 
   async function handleExportAllSamples() {
@@ -116,7 +108,6 @@
     } else {
       alert('Failed to export samples: ' + result.error);
     }
-    window.focus();
   }
 
   async function handleExportThisSample(id) {
@@ -130,7 +121,6 @@
     } else {
       alert('Failed to export sample: ' + result.error);
     }
-    window.focus();
   }
 
 

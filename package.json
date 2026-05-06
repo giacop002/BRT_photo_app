@@ -1,6 +1,6 @@
 {
   "name": "brt_photo_app",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A photo metadata management application built with Electron and Svelte.",
   "homepage": "https://github.com/giacop002/BRT_photo_app#readme",
   "bugs": {

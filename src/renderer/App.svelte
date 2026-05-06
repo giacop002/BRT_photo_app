@@ -35,6 +35,7 @@
     await window.api.deleteProbe(id);
     selectedProbeId = null;
     await loadProbes();
+    setTimeout(() => window.focus(), 50);
   }
 
   async function handleRenameProbe({ id, name }) {
@@ -108,6 +109,7 @@
     } else {
       alert('Failed to export samples: ' + result.error);
     }
+    setTimeout(() => window.focus(), 50);
   }
 
   async function handleExportThisSample(id) {
@@ -121,10 +123,14 @@
     } else {
       alert('Failed to export sample: ' + result.error);
     }
+    setTimeout(() => window.focus(), 50);
   }
 
 
   loadProbes();
+
+  window.addEventListener('blur', () => console.log('WINDOW BLUR'));
+  window.addEventListener('focus', () => console.log('WINDOW FOCUS'));
 </script>
 
 <div class="app">

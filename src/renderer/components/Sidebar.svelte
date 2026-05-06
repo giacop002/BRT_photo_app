@@ -66,10 +66,15 @@
   }
 
   async function startCreate() {
-    isCreating = true
-    newProbeName = 'BRT-DDH-'
-    await tick()
-    createInput?.focus()
+    isCreating = true;
+    newProbeName = 'BRT-DDH-';
+
+    await tick();
+
+    setTimeout(() => {
+      createInput?.focus();
+      createInput?.select(); // opcional
+    }, 0);
   }
 
   function submitCreate() {
@@ -113,6 +118,7 @@
   {#if isCreating}
     <input
       class="input"
+      key="create-input"
       bind:this={createInput}
       bind:value={newProbeName}
       placeholder="New Drill Hole"

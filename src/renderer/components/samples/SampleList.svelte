@@ -35,12 +35,17 @@
 </div>
 
 <style>
-  .list {
-    overflow-y: auto;
-  }
+    .list {
+        overflow-y: auto;
+        font-family: Lato, sans-serif;
+    }
 
-  .empty {
-    padding: 20px;
-    color: #777;
-  }
+    div {
+        font-family: Lato, sans-serif;
+    }
+
+    .empty {
+        padding: 20px;
+        color: #777;
+    }
 </style>

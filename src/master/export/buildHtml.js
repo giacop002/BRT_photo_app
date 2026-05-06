@@ -16,7 +16,7 @@ function buildSampleHTML({ sample, probe }) {
           width: 297mm;
           height: 210mm;
           overflow: hidden;
-          font-family: Arial;
+          font-family: Lato, sans-serif;
         }
 
         body {
@@ -25,6 +25,18 @@ function buildSampleHTML({ sample, probe }) {
           justify-content: space-between;
           padding: 20px;
           box-sizing: border-box;
+        }
+
+        h3 {
+          color: rgb(137, 138, 143);
+        }
+
+        h2 {
+          color: rgb(5, 69, 112)
+        }
+
+        h2, h3 {
+          font-weight: 700;
         }
 
         .header {
@@ -55,9 +67,9 @@ function buildSampleHTML({ sample, probe }) {
     <body>
       <div class="header">
         <img class="logo" src="file://${getLogoPath()}" />
-        <h2>Probe ${probe.name}</h2>
-        <h3>Depth: ${sample.depth_from} - ${sample.depth_to} m</h3>
-        <h4>${sample.sample_date || ''}</h4>
+        <h2>${probe.name}</h2>
+        <h2>From: ${sample.depth_from} m - To: ${sample.depth_to} m</h2>
+        <h3>${sample.sample_date || ''}</h3>
       </div>
 
       <div class="image">
@@ -74,9 +86,9 @@ function buildAllSamplesHTML({ samples, probe }) {
     <div class="page">
       <div class="header">
         <img class="logo" src="file://${getLogoPath()}" />
-        <h2>Probe ${probe.name}</h2>
-        <h3>Depth: ${sample.depth_from} - ${sample.depth_to} m</h3>
-        <h4>${sample.sample_date || ''}</h4>
+        <h2>${probe.name}</h2>
+        <h2>From: ${sample.depth_from} m - To: ${sample.depth_to} m</h2>
+        <h3>${sample.sample_date || ''}</h3>
       </div>
 
       <div class="image">
@@ -97,7 +109,19 @@ function buildAllSamplesHTML({ samples, probe }) {
         html, body {
           margin: 0;
           padding: 0;
-          font-family: Arial;
+          font-family: Lato, sans-serif;
+        }
+
+        h3 {
+          color: rgb(137, 138, 143);
+        }
+
+        h2 {
+          color: rgb(5, 69, 112)
+        }
+
+        h2, h3 {
+          font-weight: 700;
         }
 
         .page {

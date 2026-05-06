@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import rightArrowIcon from "@/assets/iconArrowRight.svg";
+  import rightArrowIcon from "@/assets/iconArrowRight_White.svg";
   import deleteIcon from "@/assets/iconDelete.svg";
   import exportIcon from "@/assets/iconFileExport.svg";
 
@@ -25,15 +25,15 @@
   </div>
 
   <div class="actions">
-    <button on:click={() => dispatch('click')}>
+    <button class="primary" on:click={() => dispatch('click')}>
       <img class="icon" src={rightArrowIcon} alt="Detail" />
       Detail
     </button>
-    <button on:click={() => dispatch('export')} disabled={!sample}>
+    <button class="secondary" on:click={() => dispatch('export')} disabled={!sample}>
       <img class="icon" src={exportIcon} alt="Export" />
       Export
     </button>
-    <button on:click={() => dispatch('delete')}>
+    <button class="secondary" on:click={() => dispatch('delete')}>
       <img class="icon" src={deleteIcon} alt="Delete" />
       Delete
     </button>
@@ -51,6 +51,11 @@
     border-bottom: 1px solid #eee;
     background: transparent;
     text-align: left;
+    font-family: Lato, sans-serif;
+  }
+
+  div, button {
+      font-family: Lato, sans-serif;
   }
 
   .row:hover {
@@ -97,6 +102,22 @@
     align-items: center;
     gap: 4px;
     padding: 4px 8px;
+    border: none;
+  }
+
+  .actions button.primary {
+    background-color: rgb(5, 69, 112);
+    color: white;
+  }
+
+  .actions button.primary:hover {
+    background-color: rgb(6, 89, 144);
+    cursor: pointer;
+  }
+
+  .actions button.secondary:hover {
+    background-color: #ccc;
+    cursor: pointer;
   }
 
   img.icon {

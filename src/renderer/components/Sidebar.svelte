@@ -13,7 +13,7 @@
 
   let isCreating = false
   let openMenuId = null
-  let newProbeName = ''
+  let newProbeName = 'BRT-DDH-'
   let createInput
   let renamingId = null
   let renameValue = ''
@@ -25,7 +25,7 @@
 
   function handleDelete(id, event) {
     event.stopPropagation()
-    if (confirm('Are you sure you want to delete this probe?')) {
+    if (confirm('Are you sure you want to delete this drill hole and its samples?')) {
       dispatch('deleteProbe', { id })
     }
   }
@@ -67,7 +67,7 @@
 
   async function startCreate() {
     isCreating = true
-    newProbeName = ''
+    newProbeName = 'BRT-DDH-'
     await tick()
     createInput?.focus()
   }
@@ -81,7 +81,7 @@
 
   function cancelCreate() {
     isCreating = false
-    newProbeName = ''
+    newProbeName = 'BRT-DDH-'
   }
 
   function handleKey(e) {
@@ -104,8 +104,8 @@
 
 <div class="sidebar">
   <div class="header">
-    <span>Probes</span>
-    <button class="create" on:click={startCreate}>
+    <span>Drill Holes</span>
+    <button class="create btn" on:click={startCreate}>
       <img class="icon" src={plusIcon} alt="Create Probe" />
     </button>
   </div>
@@ -115,15 +115,22 @@
       class="input"
       bind:this={createInput}
       bind:value={newProbeName}
-      placeholder="Drill Hole"
+      placeholder="New Drill Hole"
       on:keydown={handleKey}
       on:blur={cancelCreate}
     />
   {/if}
 
   <div class="list">
-    {#if probes.length === 0}
-      <div class="empty">No probes yet</div>
+    {#if probes.length === 0 && !isCreating}
+      <div class="empty">
+        No drill holes yet
+        <button class="create" on:click={startCreate}>
+          Click
+          <img class="icon" src={plusIcon} alt="Create Probe" />
+          to create
+        </button>
+      </div>
     {:else}
       {#each probes as probe}
         <div class="item
@@ -139,22 +146,22 @@
               on:blur={() => cancelRename()}
             />
           {:else}
-            <button class="name" on:click={() => handleSelect(probe.id, probe.name)}>
+            <button class="name btn" on:click={() => handleSelect(probe.id, probe.name)}>
               {probe.name}
             </button>
           {/if}
 
-          <button class="options" on:click={(e) => handleOptionsMenu(probe.id, e)}>
+          <button class="options btn" on:click={(e) => handleOptionsMenu(probe.id, e)}>
             <img class="icon" src={gearIcon} alt="Options" />
           </button>
 
           {#if openMenuId === probe.id}
             <div class="menu">
-              <button on:click={() => handleRename(probe)}>
+              <button class="btn" on:click={() => handleRename(probe)}>
                 <img class="icon" src={editIcon} alt="Rename" />
                 Rename
               </button>
-              <button on:click={(e) => handleDelete(probe.id, e)}>
+              <button class="btn" on:click={(e) => handleDelete(probe.id, e)}>
                 <img class="icon" src={deleteIcon} alt="Delete" />
                 Delete
               </button>
@@ -170,12 +177,17 @@
   .sidebar {
     width: 220px;
     height: 100vh;
-    background: #1e1e1e;
+    background: rgb(5, 69, 112);
     color: #fff;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #333;
+    border-right: 1px solid rgb(226, 232, 240);
     margin-right: 1vw;
+    font-family: Lato, sans-serif;
+  }
+
+  div, input, button {
+      font-family: Lato, sans-serif;
   }
 
   .header {
@@ -184,7 +196,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid rgb(226, 232, 240);
   }
 
   .list {
@@ -200,33 +212,56 @@
   }
 
   .item:hover {
-    background: #2a2a2a;
+    background: rgb(6, 89, 144);
     text-decoration: underline;
   }
 
   .item.selected {
-    background: #3a3a3a;
+    background: rgb(6, 89, 144);
   }
 
   .input {
     padding: 8px 10px;
     margin: 8px;
-    background: #2a2a2a;
-    border: 1px solid #444;
+    background: rgb(6, 89, 144);
+    border: 1px solid rgb(226, 232, 240);
     color: white;
   }
 
   .empty {
     padding: 12px;
     color: #aaa;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .empty button.create {
+    border-color: #fff;
+    border-radius: 5px;
+    border-width: 2px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 8px 12px;
+  }
+
+  .empty button.create:hover {
+    background-color: rgb(6, 89, 144);
+    cursor: pointer;
   }
 
   button {
-    background: none;
-    border: none;
-    color: white;
+    font-family: Lato, sans-serif;
     cursor: pointer;
+    background: none;
+    color: white;
+  }
+
+  .btn {
+    border: none;
     font-size: 16px;
+    font-family: Lato, sans-serif;
   }
 
   img.icon {
@@ -249,8 +284,8 @@
   .menu {
     position: absolute;
     right: 20%;
-    background: #2a2a2a;
-    border: 1px solid #444;
+    background: rgb(5, 69, 112);
+    border: 1px solid rgb(226, 232, 240);
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -265,14 +300,14 @@
   }
 
   .menu button:hover {
-    background: #3a3a3a;
+    background: rgb(6, 89, 144);
   }
 
   .rename-input {
     width: 100%;
     padding: 4px 6px;
-    background: #2a2a2a;
-    border: 1px solid #666;
+    background: rgb(6, 89, 144);
+    border: 1px solid rgb(226, 232, 240);
     color: white;
     font-size: 14px;
   }

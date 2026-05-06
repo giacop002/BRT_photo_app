@@ -4,6 +4,7 @@
     import SampleCreateForm from "./samples/SampleCreateForm.svelte";
     import SampleDetail from "./samples/SampleDetail.svelte";
     import Header from "./Header.svelte";
+    import plusIcon from '@/assets/iconPlus.svg'
 
     export let samples = [];
     export let selectedSampleId = null;
@@ -12,6 +13,8 @@
     export let selectedProbeName = null;
 
     let isCreatingSample = false;
+    let isEditingSample = false;
+    let sampleToEdit_id = null;
     let prevProbeId = null;
 
     const dispatch = createEventDispatcher();
@@ -43,8 +46,21 @@
         dispatch('createSample', sampleData);
     }
 
+    function handleStartEdit(sampleId) {
+        isEditingSample = true;
+        sampleToEdit_id = sampleId;
+        isCreatingSample = true;
+    }
+
+    function handleSubmitEdit(sampleData) {
+        isEditingSample = false;
+        isCreatingSample = false;
+        dispatch('editSample', sampleData);
+    }
+
     function handleGoBack() {
         isCreatingSample = false;
+        isEditingSample = false;
         selectedSampleId = null;
         dispatch('goBack');
     }
@@ -52,7 +68,8 @@
     $: if (selectedProbeId !== prevProbeId) {
         selectedSampleId = null;
         isCreatingSample = false;
-
+        isEditingSample = false;
+        sampleToEdit_id = null;
         prevProbeId = selectedProbeId;
     }
 
@@ -66,16 +83,21 @@
             {selectedProbeName}
             {selectedSampleId}
             {isCreatingSample}
+            {isEditingSample}
             on:exportSample={(e) => handleExportThisSample(e.detail.id)}
             on:exportAllSamples={handleExportAllSamples}
             on:openSampleCreateForm={handleOpenSampleCreateForm}
+            on:editSample={(e) => handleStartEdit(e.detail.id)}
             on:goBack={handleGoBack}
         />
         {#if isCreatingSample}
             <SampleCreateForm
                 {samples}
                 {isCreatingSample}
+                editMode={isEditingSample}
+                {sampleToEdit_id}
                 on:submit={(e) => handleSubmitCreateSample(e.detail)}
+                on:edit={(e) => handleSubmitEdit(e.detail)}
                 on:close={handleGoBack}
             />
         {:else if selectedSampleId}
@@ -84,7 +106,18 @@
             />
         {:else}
             {#if !selectedProbeId}
-                <div class="empty">Please select a probe to see its samples</div>
+                <div class="empty">
+                    {#if samples.length === 0}
+                    <strong>Create a new drill hole:</strong>
+                    {:else}
+                    <strong>Select a drill hole</strong> on the sidebar to see its samples, or <strong>create a new one:</strong>
+                    {/if}
+                    <ol>
+                        <li>click the <img class="icon" src={plusIcon} alt="Create Probe" /> button on the sidebar.</li>
+                        <li>enter a name for the new drill hole, e.g., "BRT-DDH-001".</li>
+                        <li>press Enter to create the drill hole.</li>
+                    </ol>
+                </div>
             {:else}
                 <SampleList
                     {samples}
@@ -107,6 +140,11 @@
         flex: 1;
         height: 100%;
         margin-right: 1vw;
+        font-family: Lato, sans-serif;
+    }
+
+    div {
+        font-family: Lato, sans-serif;
     }
 
     .samples {
@@ -125,5 +163,10 @@
     .empty {
         padding: 20px;
         color: #777;
+    }
+
+    img.icon {
+        width: 16px;
+        height: 16px;
     }
 </style>

@@ -27,6 +27,16 @@ function getSampleById(sample_id) {
   return stmt.get(sample_id)
 }
 
+function updateSample({ sample_id, image_path, depth_from, depth_to, sample_date }) {
+  const db = getDB()
+  const stmt = db.prepare(`
+    UPDATE samples
+    SET image_path = ?, depth_from = ?, depth_to = ?, sample_date = ?
+    WHERE id = ?
+  `)
+  stmt.run(image_path, depth_from, depth_to, sample_date, sample_id)
+}
+
 function deleteSample(sample_id) {
   const db = getDB()
   const stmt = db.prepare('DELETE FROM samples WHERE id = ?')
@@ -37,5 +47,6 @@ module.exports = {
   createSample,
   getSamplesByProbe,
   getSampleById,
+  updateSample,
   deleteSample
 }

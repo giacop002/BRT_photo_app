@@ -8,6 +8,7 @@
     export let selectedProbeName = null;
     export let selectedSampleId = null;
     export let isCreatingSample = false;
+    export let isEditingSample = false;
 
     const dispatch = createEventDispatcher();
 
@@ -40,14 +41,16 @@
     <div class="title">
         <img src={logo} alt="Logo" />
         <h2>
-        {#if isCreatingSample}
-            Probe {selectedProbeName} - New Sample
-        {:else if selectedSampleId}
-            Probe {selectedProbeName} - Sample Detail
+        {#if isCreatingSample && !isEditingSample}
+            {selectedProbeName} - New Sample
+        {:else if selectedSampleId && !isEditingSample}
+            {selectedProbeName} - Sample Detail
+        {:else if isEditingSample}
+            {selectedProbeName} - Edit Sample
         {:else if (!selectedProbeId)}
-            No probe selected
+            No drill hole selected
         {:else}
-            Probe {selectedProbeName} - Samples
+            {selectedProbeName} - Samples
         {/if}
         </h2>
     </div>
@@ -59,6 +62,7 @@
         on:exportSample={handleExportSample}
         on:exportAllSamples={handleExportAllSamples}
         on:openSampleCreateForm={handleOpenSampleCreateForm}
+        on:editSample={(e) => dispatch('editSample', e.detail)}
         on:goBack={handleGoBack}
     />
 </div>
@@ -71,6 +75,16 @@
         align-items: center;
         padding: 20px;
         border-bottom: 1px solid #eee;
+        font-family: Lato, sans-serif;
+    }
+
+    div, h2 {
+        font-family: Lato, sans-serif;
+    }
+
+    h2 {
+        font-weight: 700;
+        color: rgb(5, 69, 112);
     }
 
     .title {

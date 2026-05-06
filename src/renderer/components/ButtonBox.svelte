@@ -3,7 +3,8 @@
     import leftArrowIcon from "@/assets/iconArrowLeft.svg";
     import exportIcon from "@/assets/iconFileExport.svg";
     import exportAllIcon from "@/assets/iconFiles.svg";
-    import addIcon from "@/assets/iconPlus.svg";
+    import addIcon from "@/assets/iconPlus_White.svg";
+    import editIcon from '@/assets/iconEdit_White.svg'
 
     export let samples = [];
     export let selectedProbeId = null;
@@ -36,24 +37,37 @@
         selectedSampleId = null;
         dispatch('goBack');
     }
+
+    function handleEditSample() {
+        if (!selectedSampleId) return;
+        dispatch('editSample', { id: selectedSampleId });
+    }
 </script>
 
 <div class="button-box">
     {#if isCreatingSample}
-        <button
+    <!-- Sample Create Form -->
+        <button class="back btn-secondary"
             on:click={handleGoBack}
         >
             <img class="icon" src={leftArrowIcon} alt="Back" />
              Back
         </button>
     {:else if selectedSampleId}
-        <button
+    <!-- Sample Details/Edit -->
+        <button class="back btn-secondary"
             on:click={handleGoBack}
         >
             <img class="icon" src={leftArrowIcon} alt="Back" />
              Back
         </button>
-        <button
+        <button class="edit btn-primary"
+            on:click={handleEditSample}
+        >
+            <img class="icon" src={editIcon} alt="Edit" />
+             Edit
+        </button>
+        <button class="export btn-secondary"
             on:click={handleExportSample}
             disabled={!selectedSampleId}
         >
@@ -61,13 +75,14 @@
             Export
         </button>
     {:else if selectedProbeId}
-        <button class="create btn"
+    <!-- Sample List -->
+        <button class="create btn-primary"
                 disabled={!selectedProbeId}
                 on:click={handleOpenSampleCreateForm}>
             <img class="icon" src={addIcon} alt="Create Sample" />
             Add Sample
         </button>
-        <button class="export btn"
+        <button class="export btn-secondary"
                 disabled={!selectedProbeId || samples.length === 0}
                 on:click={handleExportAllSamples}
         >
@@ -89,6 +104,7 @@
         gap: 12px;
         padding: 12px;
         border-radius: 4px;
+        font-family: Lato, sans-serif;
     }
 
     button {
@@ -97,6 +113,22 @@
         gap: 8px;
         padding: 8px 12px;
         font-size: 14px;
+        font-family: Lato, sans-serif;
+        border: none;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background-color: #ccc;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: rgb(5, 69, 112);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: rgb(6, 89, 144);
         cursor: pointer;
     }
 </style>

@@ -5,9 +5,27 @@
     import cropSqrIcon from "@/assets/iconCropSquare.svg";
     import cancelIcon from "@/assets/iconX.svg";
     import createIcon from "@/assets/iconPlus_White.svg";
+    import saveIcon from "@/assets/iconSave_White.svg";
 
     export let samples = [];
     export let isCreatingSample = false;
+    export let editMode = false;
+    export let sampleToEdit_id = null;
+
+    let prevSampleId = null;
+
+    let sampleToEdit = null;
+    async function loadData() {
+        if (loading) return;
+        loading = true;
+
+        try {
+            sampleToEdit = await window.api.getSampleById(sampleToEdit_id);
+        } finally {
+            loading = false;
+        }
+    }
+
 
     const dispatch = createEventDispatcher();
 
@@ -20,12 +38,38 @@
     let initialized = false;
 
     let previewRef;
+    let loading = false;
 
     function getToday() {
         return new Date().toISOString().slice(0, 10);
     }
 
-    $: if (samples && !initialized) {
+    $: if (editMode && sampleToEdit_id !== prevSampleId) {
+        prevSampleId = sampleToEdit_id;
+
+        sampleToEdit = null;
+        initialized = false;
+
+        file_path = null;
+        depth_from = '';
+        depth_to = '';
+        sample_date = '';
+
+        loadData();
+    }
+
+    $: if (editMode && sampleToEdit && !initialized) {
+        file_path = sampleToEdit.image_path;
+        depth_from = sampleToEdit.depth_from ?? '';
+        depth_to = sampleToEdit.depth_to ?? '';
+        sample_date = sampleToEdit.sample_date
+            ? sampleToEdit.sample_date.slice(0, 10)
+            : '';
+
+        initialized = true;
+    }
+
+    $: if (!editMode && samples && !initialized) {
         if (samples.length === 0) {
             depth_from = 0;
             depth_to = 1;
@@ -52,37 +96,6 @@
         initialized = true;
     }
 
-    // function createThumbnail(dataUrl) {
-    //     return new Promise((resolve) => {
-    //         const img = new Image();
-    //         img.src = dataUrl;
-
-    //         img.onload = () => {
-    //             const canvas = document.createElement("canvas");
-    //             const ctx = canvas.getContext("2d");
-
-    //             const maxSize = 120; // tamaño thumbnail
-
-    //             let { width, height } = img;
-
-    //             if (width > height) {
-    //                 height = height * (maxSize / width);
-    //                 width = maxSize;
-    //             } else {
-    //                 width = width * (maxSize / height);
-    //                 height = maxSize;
-    //             }
-
-    //             canvas.width = width;
-    //             canvas.height = height;
-
-    //             ctx.drawImage(img, 0, 0, width, height);
-
-    //             resolve(canvas.toDataURL("image/jpeg", 0.7));
-    //         };
-    //     });
-    // }
-
     async function handleSubmit() {
         if (!file_path) {
             alert('Please select an image');
@@ -93,12 +106,9 @@
             return
         }
 
-        // const thumbnail = await createThumbnail(cropped_image);
-
         dispatch('submit', {
             file_path,
             cropped_image: previewRef?.getCroppedImage(),
-            // thumbnail,
             depth_from: depth_from !== '' ? parseFloat(depth_from) : null,
             depth_to: depth_to !== '' ? parseFloat(depth_to) : null,
             sample_date: sample_date || null
@@ -107,10 +117,31 @@
         reset()
     }
 
+    async function handleSubmitEdit() {
+        if (!file_path) {
+            alert('Please select an image');
+            return;
+        }
+
+        if (depth_from && depth_to && depth_from > depth_to) {
+            alert('Depth from < depth to');
+            return;
+        }
+
+        dispatch('edit', {
+            id: sampleToEdit.id,
+            file_path,
+            cropped_image: previewRef?.getCroppedImage(),
+            depth_from: depth_from !== '' ? parseFloat(depth_from) : null,
+            depth_to: depth_to !== '' ? parseFloat(depth_to) : null,
+            sample_date: sample_date || null
+        });
+
+        reset();
+    }
+
     function handleCancel() {
         reset();
-        isCreatingSample = false;
-        dispatch('close');
     }
 
     function reset() {
@@ -120,6 +151,10 @@
         sample_date = '';
 
         initialized = false;
+        isCreatingSample = false;
+        editMode = false;
+        sampleToEdit_id = null;
+        dispatch('close');
     }
 
     async function pickFile() {
@@ -130,6 +165,9 @@
 <div class="content">
     <div class="left">
         <div class="preview">
+        {#if editMode}
+            <img src={file_path} alt="sample">
+        {:else}
             {#if file_path}
                 <ImagePreview
                     {file_path}
@@ -137,43 +175,56 @@
                     on:crop={(e) => cropped_image = e.detail.dataUrl}
                 />
             {:else}
-                <div class="placeholder">No image selected</div>
+                <div class="placeholder">
+                    No image selected
+                    <button class="pick-img" on:click={pickFile}>
+                        Select image
+                    </button>
+                </div>
             {/if}
+        {/if}
         </div>
     </div>
     <div class="right">
-        <div class="inputs">
-            <div class="depth field">
-                <p>Depth from:</p>
-                <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
-            </div>
-            <div class="depth field">
-                <p>Depth to:</p>
-                <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
-            </div>
-            <div class="date field">
-                <p>Sample date:</p>
-                <input type="date" bind:value={sample_date} />
-            </div>
+        <div class="depth field">
+            <p>From:</p>
+            <input type="number" step="0.01" min="0" placeholder="Depth From" bind:value={depth_from} />
         </div>
-        <button class="pick-img" on:click={pickFile}>
-            {file_path ? 'Cambiar imagen' : 'Seleccionar imagen'}
-        </button>
-        <div class="adjust-crop">
-            <button class="maximize-crop" on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
-                <img class="icon" src={cropImgIcon} alt="Use full img icon" />
-                Use full image
-            </button>
-            <button class="reset-crop" on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
-                <img class="icon" src={cropSqrIcon} alt="Reset crop icon" />
-                Reset crop
-            </button>
+        <div class="depth field">
+            <p>To:</p>
+            <input type="number" step="0.01" min="0" placeholder="Depth To" bind:value={depth_to} />
         </div>
+        <div class="date field">
+            <p>Date:</p>
+            <input type="date" bind:value={sample_date} />
+        </div>
+        {#if !editMode}
+            <button class="pick-img" on:click={pickFile}>
+                {file_path ? 'Change image' : 'Select image'}
+            </button>
+            <div class="adjust-crop">
+                <button class="maximize-crop" on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
+                    <img class="icon" src={cropImgIcon} alt="Use full img icon" />
+                    Use full image
+                </button>
+                <button class="reset-crop" on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
+                    <img class="icon" src={cropSqrIcon} alt="Reset crop icon" />
+                    Reset crop
+                </button>
+            </div>
+        {/if}
         <div class="actions">
-            <button class="save" on:click={handleSubmit}>
-                <img class="icon" src={createIcon} alt="Save" />
-                Save
-            </button>
+            {#if editMode}
+                <button class="save" on:click={handleSubmitEdit}>
+                    <img class="icon" src={saveIcon} alt="Save" />
+                    Save
+                </button>
+            {:else}
+                <button class="save" on:click={handleSubmit}>
+                    <img class="icon" src={createIcon} alt="Create" />
+                    Create
+                </button>
+            {/if}
             <button class="cancel" on:click={handleCancel}>
                 <img class="icon" src={cancelIcon} alt="Cancel" />
                 Cancel
@@ -187,6 +238,16 @@
         display: flex;
         flex: 1;
         gap: 16px;
+        font-family: Lato, sans-serif;
+    }
+
+    div, p, input, button {
+        font-family: Lato, sans-serif;
+        margin: 0;
+    }
+
+    p {
+        font-weight: bold;
     }
 
     .left {
@@ -206,15 +267,33 @@
         background: #fafafa;
     }
 
+    .preview img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
     .placeholder {
         color: #888;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
 
     .right {
+        margin-top: 10px;
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        justify-content: space-evenly;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-content: center;
+        width: 100%;
     }
 
     .right input {
@@ -224,28 +303,63 @@
 
 
     .actions {
-        margin-top: auto;
         display: flex;
+        width: 100%;
+        justify-content: space-between;
         gap: 10px;
     }
 
+    .actions button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
     .save {
-        background: #2e7d32;
+        background: rgb(5, 69, 112);
         color: white;
     }
 
-    .cancel {
+    .save:hover {
+        background: rgb(6, 89, 144);
+    }
+
+    .cancel:hover {
         background: #ccc;
     }
 
     .adjust-crop {
         display: flex;
-        width: 100%;
         gap: 10px;
+        width: 100%;
     }
 
     .adjust-crop button {
         flex: 1;
+        padding: 10px;
+        border: none;
+    }
+
+    .adjust-crop button:not(:disabled):hover {
+        cursor: pointer;
+        background: #ccc;
+    }
+
+    .pick-img {
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        background: rgb(5, 69, 112);
+        color: white;
+    }
+
+    .pick-img:hover {
+        background: rgb(6, 89, 144);
     }
 
     img.icon {

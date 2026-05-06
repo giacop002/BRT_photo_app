@@ -19,7 +19,8 @@
     </div>
 
     <div class="meta">
-        <p><strong>Depth:</strong> {sample.depth_from} - {sample.depth_to}</p>
+        <p><strong>From:</strong> {sample.depth_from} m</p>
+        <p><strong>To:</strong> {sample.depth_to} m</p>
         <p><strong>Date:</strong> {sample.sample_date || '-'}</p>
     </div>
 </div>
@@ -29,6 +30,11 @@
     .content {
         display: flex;
         gap: 16px;
+        font-family: Lato, sans-serif;
+    }
+
+    div, p {
+        font-family: Lato, sans-serif;
     }
 
     .image {

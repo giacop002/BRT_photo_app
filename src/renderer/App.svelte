@@ -69,6 +69,25 @@
     loadingSamples = false;
   }
 
+  async function handleUpdateSample(data) {
+    console.log('Updating sample with data:', data);
+
+    const response = await window.api.updateSample({
+      sample_id: data.id,
+      image_path: data.file_path,
+      depth_from: data.depth_from,
+      depth_to: data.depth_to,
+      sample_date: data.sample_date
+    });
+
+    console.log('Update sample response:', response);
+
+    loadingSamples = true;
+    await loadProbes();
+    handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
+    loadingSamples = false;
+  }
+
   async function handleDeleteSample(id) {
     await window.api.deleteSample(id);
     await loadProbes();
@@ -127,6 +146,7 @@
     {loadingSamples}
     on:selectSample={(e) => handleSelectSample(e.detail.id)}
     on:createSample={(e) => handleCreateSample(e.detail)}
+    on:editSample={(e) => handleUpdateSample(e.detail)}
     on:deleteSample={(e) => handleDeleteSample(e.detail.id)}
     on:exportAllSamples={handleExportAllSamples}
     on:exportThisSample={(e) => handleExportThisSample(e.detail.id)}

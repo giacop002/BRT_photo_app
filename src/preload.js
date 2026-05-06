@@ -4,6 +4,7 @@ const { pathToFileURL } = require('url')
 const { selectImageFile } = require('./master/fileStorage')
 
 contextBridge.exposeInMainWorld('api', {
+  refocusWindow: () => ipcRenderer.invoke('refocus-window'),
   createProbe: (data) => ipcRenderer.invoke('create-probe', data),
   getProbes: () => ipcRenderer.invoke('get-probes'),
   deleteProbe: (probe_id) => ipcRenderer.invoke('delete-probe', probe_id),

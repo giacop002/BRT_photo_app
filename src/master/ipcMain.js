@@ -5,14 +5,20 @@ const { createObservation, getObservationsBySample, deleteObservation } = requir
 const { copyImageToLocal, getImagesDir, selectImageFile, saveBase64Image } = require('./fileStorage')
 const { exportSample, exportAllSamples } = require('./export/exportToPdf')
 
-function focusMainWindow() {
+function reloadMainWindow() {
   const win = BrowserWindow.getAllWindows()[0];
   if (win) {
-    win.focus();
+    win.webContents.reload();
+    return true;
   }
+  return false;
 }
 
 function setupIpcHandlers() {
+  ipcMain.handle('refocus-window', async () => {
+    return reloadMainWindow();
+  })
+
   ipcMain.handle('create-probe', async (__, data) => {
     return createProbe(data)
   })
@@ -22,7 +28,6 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('delete-probe', async (__, probe_id) => {
-    focusMainWindow();
     return deleteProbe(probe_id)
   })
 
@@ -48,12 +53,10 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('delete-sample', async (__, sample_id) => {
-    focusMainWindow();
     return deleteSample(sample_id)
   })
 
   ipcMain.handle('update-sample', async (__, data) => {
-    focusMainWindow();
     return updateSample(data)
   })
 
@@ -87,12 +90,10 @@ function setupIpcHandlers() {
 
   ipcMain.handle('export-sample', async (__, data) => {
     const { sample_id, probe_id } = data;
-    focusMainWindow();
     return await exportSample(sample_id, probe_id);
   })
 
   ipcMain.handle('export-all-samples', async (__, probe_id) => {
-    focusMainWindow();
     return await exportAllSamples(probe_id);
   })
 }

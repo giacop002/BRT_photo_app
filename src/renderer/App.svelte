@@ -11,6 +11,10 @@
 
   let loadingSamples = false;
 
+  async function refocusWindow() {
+    await window.api.refocusWindow();
+  }
+
   async function loadProbes() {
     probes = await window.api.getProbes();
   }
@@ -33,9 +37,9 @@
 
   async function handleDeleteProbe(id) {
     await window.api.deleteProbe(id);
-    selectedProbeId = null;
+    if (selectedProbeId === id) { selectedProbeId, selectedProbeName = null, null; }
     await loadProbes();
-    setTimeout(() => window.focus(), 50);
+    await refocusWindow();
   }
 
   async function handleRenameProbe({ id, name }) {
@@ -72,7 +76,7 @@
 
   async function handleUpdateSample(data) {
 
-    const response = await window.api.updateSample({
+    await window.api.updateSample({
       sample_id: data.id,
       image_path: data.file_path,
       depth_from: data.depth_from,
@@ -106,10 +110,11 @@
     if (result.canceled) return;
     if (result.success) {
       alert('Samples exported successfully');
+      await refocusWindow();
     } else {
       alert('Failed to export samples: ' + result.error);
+      await refocusWindow();
     }
-    setTimeout(() => window.focus(), 50);
   }
 
   async function handleExportThisSample(id) {
@@ -120,10 +125,11 @@
     if (result.canceled) return;
     if (result.success) {
       alert('Sample exported successfully');
+      await refocusWindow();
     } else {
       alert('Failed to export sample: ' + result.error);
+      await refocusWindow();
     }
-    setTimeout(() => window.focus(), 50);
   }
 
 

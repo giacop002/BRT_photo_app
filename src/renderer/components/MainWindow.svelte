@@ -107,11 +107,7 @@
         {:else}
             {#if !selectedProbeId}
                 <div class="empty">
-                    {#if samples.length === 0}
-                    <strong>Create a new drill hole:</strong>
-                    {:else}
                     <strong>Select a drill hole</strong> on the sidebar to see its samples, or <strong>create a new one:</strong>
-                    {/if}
                     <ol>
                         <li>click the <img class="icon" src={plusIcon} alt="Create Probe" /> button on the sidebar.</li>
                         <li>enter a name for the new drill hole, e.g., "BRT-DDH-001".</li>

@@ -73,7 +73,7 @@
 
     setTimeout(() => {
       createInput?.focus();
-      createInput?.select(); // opcional
+      createInput?.select();
     }, 0);
   }
 

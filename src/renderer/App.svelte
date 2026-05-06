@@ -29,12 +29,14 @@
     let new_probe_id = await window.api.createProbe({ name });
     await loadProbes();
     handleSelectProbe({ id: new_probe_id, name });
+    window.focus();
   }
 
   async function handleDeleteProbe(id) {
     await window.api.deleteProbe(id);
     selectedProbeId = null;
     await loadProbes();
+    window.focus();
   }
 
   async function handleRenameProbe({ id, name }) {
@@ -43,6 +45,7 @@
     if (selectedProbeId === id) {
       selectedProbeName = name;
     }
+    window.focus();
   }
 
   function handleSelectSample(id) {
@@ -67,6 +70,7 @@
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
     loadingSamples = false;
+    window.focus();
   }
 
   async function handleUpdateSample(data) {
@@ -93,6 +97,7 @@
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
     loadingSamples = false;
+    window.focus();
   }
 
   async function handleExportAllSamples() {
@@ -111,6 +116,7 @@
     } else {
       alert('Failed to export samples: ' + result.error);
     }
+    window.focus();
   }
 
   async function handleExportThisSample(id) {
@@ -124,6 +130,7 @@
     } else {
       alert('Failed to export sample: ' + result.error);
     }
+    window.focus();
   }
 
 

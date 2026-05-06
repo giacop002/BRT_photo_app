@@ -131,7 +131,7 @@
     </div>
 
     {#if loadingSamples}
-      <div class="overlay">Loading samples...</div>
+      <div class="overlay {loadingSamples ? 'active' : 'empty'}">Loading samples...</div>
     {/if}
 </div>
 
@@ -151,13 +151,19 @@
         height: 95%;
     }
 
-    .overlay {
+    .overlay.active {
         position: absolute;
         inset: 0;
         background: rgba(255,255,255,0.6);
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 999;
+        pointer-events: all;
+    }
+
+    .overlay.empty {
+        pointer-events: none;
     }
 
     .empty {

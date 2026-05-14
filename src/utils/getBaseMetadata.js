@@ -1,3 +1,7 @@
+function getToday() {
+    return new Date().toISOString().slice(0, 10);
+}
+
 export default function getBaseMetadata(samples) {
     let depth_from, sample_date;
     if (samples.length === 0) {

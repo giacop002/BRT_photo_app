@@ -60,6 +60,7 @@
 
   async function handleCreateSample(data) {
     const { file_path, cropped_image, ...rest } = data;
+    console.log('Creating sample with data:', { ...rest, file_path, cropped_image }); // Debug log
 
     await window.api.createSample({
       ...rest,
@@ -72,6 +73,34 @@
     await loadProbes();
     handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
     loadingSamples = false;
+  }
+
+  async function handleCreateBatchSamples(batchSamples) {
+    if (!selectedProbeId) return;
+    loadingSamples = true;
+
+    try {
+      for (const sample of batchSamples) {
+        console.log('Creating sample with data:', { sample }); // Debug log
+        const { file_path, cropped_image, ...rest } = sample;
+
+        await window.api.createSample({
+          ...rest,
+          probe_id: selectedProbeId,
+          image_path: file_path,
+          // cropped_image
+        });
+      }
+    }
+    catch (err) {
+      console.error(err);
+      alert('Failed to import batch samples');
+    }
+    finally {
+      await loadProbes();
+      await handleSelectProbe({ id: selectedProbeId, name: selectedProbeName });
+      loadingSamples = false;
+    }
   }
 
   async function handleUpdateSample(data) {
@@ -152,6 +181,7 @@
     {loadingSamples}
     on:selectSample={(e) => handleSelectSample(e.detail.id)}
     on:createSample={(e) => handleCreateSample(e.detail)}
+    on:saveBatch={(e) => handleCreateBatchSamples(e.detail.samples)}
     on:editSample={(e) => handleUpdateSample(e.detail)}
     on:deleteSample={(e) => handleDeleteSample(e.detail.id)}
     on:exportAllSamples={handleExportAllSamples}

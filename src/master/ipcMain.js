@@ -36,16 +36,16 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('create-sample', async (__, data) => {
-    const { original_path, cropped_image, ...rest } = data
+    const { image_path, cropped_image, ...rest } = data
 
-    let image_path;
+    let final_path;
 
     if (cropped_image) {
-      image_path = saveBase64Image(cropped_image)
+      final_path = saveBase64Image(cropped_image)
     } else {
-      image_path = copyImageToLocal(original_path)
+      final_path = copyImageToLocal(image_path)
     }
-    return createSample({ ...rest, image_path })
+    return createSample({ ...rest, image_path: final_path })
   })
 
   ipcMain.handle('get-samples-by-probe', async (__, probe_id) => {

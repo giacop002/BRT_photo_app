@@ -57,6 +57,7 @@
     }
 
     function handleSaveAll() {
+        selectSample(selectedBatchIndex);
         dispatch('saveAll', { samples: batchSamples });
         initialized = false;
     }

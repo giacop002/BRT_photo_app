@@ -101,7 +101,6 @@
 
     function buildBatchSamples(files) {
         let _, meta = getBaseMetadata(samples);
-        console.log('Base metadata for batch:', { meta });
         const generatedSamples = files.map((file, index) => ({
             temp_id: `batch-${index}`,
             file_path: file,
@@ -111,7 +110,6 @@
             croppped_image: null,
             edited: false,
         }));
-        console.log('Generated batch samples:', generatedSamples);
         return generatedSamples;
     }
 
@@ -160,7 +158,7 @@
         {:else if isBatchCreating}
             <BatchCreateForm
                 {batchSamples}
-                on:save={handleSaveBatch}
+                on:saveAll={handleSaveBatch}
                 on:close={handleCancelBatch}
             />
         {:else if selectedSampleId}

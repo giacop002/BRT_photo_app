@@ -6,8 +6,7 @@ const { copyLogoToLocal } = require('./src/master/fileStorage')
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 1200,
-    height: 600,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'src', 'preload.js'),
       contextIsolation: true,
@@ -16,6 +15,8 @@ const createWindow = () => {
       webSecurity: false
     }
   })
+  win.maximize()
+  win.show()
 
   const isDev = !app.isPackaged;
 

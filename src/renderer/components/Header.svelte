@@ -8,6 +8,7 @@
     export let selectedProbeName = null;
     export let selectedSampleId = null;
     export let isCreatingSample = false;
+    export let isBatchCreating = false;
     export let isEditingSample = false;
 
     const dispatch = createEventDispatcher();
@@ -30,8 +31,18 @@
         dispatch('openSampleCreateForm');
     }
 
+    function handleOpenBatchCreateForm() {
+        isBatchCreating = true;
+        dispatch('openBatchCreateForm');
+    }
+
+    export function cancelBatchUpload() {
+        isBatchCreating = false;
+    }
+
     function handleGoBack() {
         isCreatingSample = false;
+        isBatchCreating = false;
         selectedSampleId = null;
         dispatch('goBack');
     }
@@ -45,6 +56,8 @@
             {selectedProbeName} - New Sample
         {:else if selectedSampleId && !isEditingSample}
             {selectedProbeName} - Sample Detail
+        {:else if isBatchCreating}
+            {selectedProbeName} - Import Batch
         {:else if isEditingSample}
             {selectedProbeName} - Edit Sample
         {:else if (!selectedProbeId)}
@@ -59,9 +72,11 @@
         {selectedProbeId}
         {selectedSampleId}
         {isCreatingSample}
+        {isBatchCreating}
         on:exportSample={handleExportSample}
         on:exportAllSamples={handleExportAllSamples}
         on:openSampleCreateForm={handleOpenSampleCreateForm}
+        on:openBatchCreateForm={handleOpenBatchCreateForm}
         on:editSample={(e) => dispatch('editSample', e.detail)}
         on:goBack={handleGoBack}
     />

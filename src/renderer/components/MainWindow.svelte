@@ -1,7 +1,9 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import getBaseMetadata from "@/utils/getBaseMetadata";
     import SampleList from "./samples/SampleList.svelte";
     import SampleCreateForm from "./samples/SampleCreateForm.svelte";
+    import BatchCreateForm from "./samples/BatchCreateForm.svelte";
     import SampleDetail from "./samples/SampleDetail.svelte";
     import Header from "./Header.svelte";
     import plusIcon from '@/assets/iconPlus.svg'
@@ -16,6 +18,12 @@
     let isEditingSample = false;
     let sampleToEdit_id = null;
     let prevProbeId = null;
+
+    let isBatchCreating = false;
+    let batchSamples = [];
+    let selectedBatchIndex = 0;
+
+    let headerRef;
 
     const dispatch = createEventDispatcher();
 
@@ -60,6 +68,7 @@
 
     function handleGoBack() {
         isCreatingSample = false;
+        isBatchCreating = false;
         isEditingSample = false;
         selectedSampleId = null;
         dispatch('goBack');
@@ -68,10 +77,55 @@
     $: if (selectedProbeId !== prevProbeId) {
         selectedSampleId = null;
         isCreatingSample = false;
+        isBatchCreating = false;
         isEditingSample = false;
         sampleToEdit_id = null;
         prevProbeId = selectedProbeId;
     }
+
+    async function handleOpenBatchCreate() {
+        const files = await window.api.selectImageFiles();
+
+        if (!files.length) {
+            isBatchCreating = false;
+            headerRef.cancelBatchUpload();
+            return;
+        }
+
+        files.sort();
+        batchSamples = buildBatchSamples(files);
+
+        selectedBatchIndex = 0;
+        isBatchCreating = true;
+    }
+
+    function buildBatchSamples(files) {
+        let _, meta = getBaseMetadata(samples);
+        console.log('Base metadata for batch:', { meta });
+        const generatedSamples = files.map((file, index) => ({
+            temp_id: `batch-${index}`,
+            file_path: file,
+            depth_from: meta.depth_from + index,
+            depth_to: meta.depth_from + index + 1,
+            sample_date: meta.sample_date,
+            croppped_image: null,
+            edited: false,
+        }));
+        console.log('Generated batch samples:', generatedSamples);
+        return generatedSamples;
+    }
+
+    function handleSaveBatch() {
+        dispatch('saveBatch', { samples: batchSamples });
+        isBatchCreating = false;
+        batchSamples = [];
+    }
+
+    function handleCancelBatch() {
+        isBatchCreating = false;
+        batchSamples = [];
+    }
+
 
 </script>
 
@@ -84,11 +138,14 @@
             {selectedSampleId}
             {isCreatingSample}
             {isEditingSample}
+            {isBatchCreating}
             on:exportSample={(e) => handleExportThisSample(e.detail.id)}
             on:exportAllSamples={handleExportAllSamples}
             on:openSampleCreateForm={handleOpenSampleCreateForm}
+            on:openBatchCreateForm={handleOpenBatchCreate}
             on:editSample={(e) => handleStartEdit(e.detail.id)}
             on:goBack={handleGoBack}
+            bind:this={headerRef}
         />
         {#if isCreatingSample}
             <SampleCreateForm
@@ -99,6 +156,12 @@
                 on:submit={(e) => handleSubmitCreateSample(e.detail)}
                 on:edit={(e) => handleSubmitEdit(e.detail)}
                 on:close={handleGoBack}
+            />
+        {:else if isBatchCreating}
+            <BatchCreateForm
+                {batchSamples}
+                on:save={handleSaveBatch}
+                on:close={handleCancelBatch}
             />
         {:else if selectedSampleId}
             <SampleDetail

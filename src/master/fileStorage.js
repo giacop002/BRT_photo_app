@@ -80,6 +80,22 @@ async function selectImageFile() {
     return result.filePaths[0];
 }
 
+async function selectImageFiles() {
+    const result = await dialog.showOpenDialog({
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      {
+        name: 'Images',
+        extensions: ['jpg', 'jpeg', 'png']
+      }
+    ]
+  });
+
+  if (result.canceled) return [];
+
+  return result.filePaths;
+}
+
 function saveBase64Image(dataUrl) {
     if (!dataUrl) {
         throw new Error('Data URL inválido.');
@@ -110,6 +126,7 @@ module.exports = {
     copyImageToLocal,
     getImagesDir,
     selectImageFile,
+    selectImageFiles,
     saveBase64Image,
     copyLogoToLocal,
     getLogoPath

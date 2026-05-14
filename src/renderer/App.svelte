@@ -134,9 +134,6 @@
 
 
   loadProbes();
-
-  window.addEventListener('blur', () => console.log('WINDOW BLUR'));
-  window.addEventListener('focus', () => console.log('WINDOW FOCUS'));
 </script>
 
 <div class="app">

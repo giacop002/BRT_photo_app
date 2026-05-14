@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('api', {
   copyImageToLocal: (originalPath) => ipcRenderer.invoke('copy-image-to-local', originalPath),
   getImagesDir: () => ipcRenderer.invoke('get-images-dir'),
   selectImageFile: () => ipcRenderer.invoke('select-image-file'),
+  selectImageFiles: () => ipcRenderer.invoke('select-image-files'),
   getSampleById: (sample_id) => ipcRenderer.invoke('get-sample-by-id', sample_id),
   exportSample: (data) => ipcRenderer.invoke('export-sample', data),
   exportAllSamples: (probe_id) => ipcRenderer.invoke('export-all-samples', probe_id)

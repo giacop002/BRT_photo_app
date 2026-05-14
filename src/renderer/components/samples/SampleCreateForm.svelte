@@ -1,6 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
-    import ImagePreview from "../img/ImagePreview.svelte";
+    import getBaseMetadata from "@/utils/getBaseMetadata";
+    import ImagePreview from "@/renderer/components/img/ImagePreview.svelte";
     import cropImgIcon from "@/assets/iconCropImg.svg";
     import cropSqrIcon from "@/assets/iconCropSquare.svg";
     import cancelIcon from "@/assets/iconX.svg";
@@ -40,10 +41,6 @@
     let previewRef;
     let loading = false;
 
-    function getToday() {
-        return new Date().toISOString().slice(0, 10);
-    }
-
     $: if (editMode && sampleToEdit_id !== prevSampleId) {
         prevSampleId = sampleToEdit_id;
 
@@ -70,28 +67,8 @@
     }
 
     $: if (!editMode && samples && !initialized) {
-        if (samples.length === 0) {
-            depth_from = 0;
-            depth_to = 1;
-            sample_date = getToday();
-        } else {
-            const maxSample = samples.reduce((max, s) => {
-                const to = s.depth_to ?? 0;
-                return to > (max.depth_to ?? 0) ? s : max;
-            }, samples[0]);
-
-            depth_from = maxSample.depth_to ?? 0;
-            depth_to = depth_from + 1;
-            const latestSample = samples.reduce((latest, s) => {
-                if (!s.sample_date) return latest;
-                if (!latest) return s;
-                return new Date(s.sample_date) > new Date(latest.sample_date) ? s : latest;
-            }, null);
-
-            sample_date = latestSample?.sample_date
-                ? latestSample.sample_date.slice(0, 10)
-                : new Date().toISOString().slice(0, 10);
-        }
+        ({ depth_from, sample_date } = getBaseMetadata(samples));
+        depth_to = depth_from + 1;
 
         initialized = true;
     }

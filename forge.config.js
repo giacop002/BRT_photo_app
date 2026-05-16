@@ -33,7 +33,7 @@ module.exports = {
       config: {
         repository: {
           owner: 'giacop002',
-          name: 'BRT_photo_app'
+          name: 'ProbePhotoApp',
         },
         prerelease: true
       }

@@ -1,14 +1,14 @@
 {
-  "name": "brt_photo_app",
-  "version": "2.1.1",
+  "name": "probe_photo_app",
+  "version": "2.1.2",
   "description": "A photo metadata management application built with Electron and Svelte.",
-  "homepage": "https://github.com/giacop002/BRT_photo_app#readme",
+  "homepage": "https://github.com/giacop002/ProbePhotoApp#readme",
   "bugs": {
-    "url": "https://github.com/giacop002/BRT_photo_app/issues"
+    "url": "https://github.com/giacop002/ProbePhotoApp/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/giacop002/BRT_photo_app.git"
+    "url": "git+https://github.com/giacop002/ProbePhotoApp.git"
   },
   "license": "ISC",
   "author": "giacop002",

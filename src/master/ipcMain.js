@@ -1,4 +1,5 @@
 const { ipcMain, BrowserWindow } = require('electron/main')
+const { createProyect, getProyects, editProyect, deleteProyect } = require('./db/proyectService')
 const { createProbe, getProbes, deleteProbe, renameProbe } = require('./db/probeService')
 const { createSample, getSamplesByProbe, getSampleById, updateSample, deleteSample } = require('./db/sampleService')
 const { createObservation, getObservationsBySample, deleteObservation } = require('./db/observationService')
@@ -17,6 +18,22 @@ function reloadMainWindow() {
 function setupIpcHandlers() {
   ipcMain.handle('refocus-window', async () => {
     return reloadMainWindow();
+  })
+
+  ipcMain.handle('create-proyect', async (__, data) => {
+    return createProyect(data)
+  })
+
+  ipcMain.handle('get-proyects', async () => {
+    return getProyects()
+  })
+
+  ipcMain.handle('delete-proyect', async (__, proyect_id) => {
+    return deleteProyect(proyect_id)
+  })
+
+  ipcMain.handle('edit-proyect', async (__, data) => {
+    return editProyect(data)
   })
 
   ipcMain.handle('create-probe', async (__, data) => {

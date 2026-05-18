@@ -1,5 +1,5 @@
 const { ipcMain, BrowserWindow } = require('electron/main')
-const { createProyect, getProyects, editProyect, deleteProyect } = require('./db/proyectService')
+const { createProject, getProjects, editProject, deleteProject } = require('./db/projectService')
 const { createProbe, getProbes, deleteProbe, renameProbe } = require('./db/probeService')
 const { createSample, getSamplesByProbe, getSampleById, updateSample, deleteSample } = require('./db/sampleService')
 const { createObservation, getObservationsBySample, deleteObservation } = require('./db/observationService')
@@ -20,28 +20,28 @@ function setupIpcHandlers() {
     return reloadMainWindow();
   })
 
-  ipcMain.handle('create-proyect', async (__, data) => {
-    return createProyect(data)
+  ipcMain.handle('create-project', async (__, data) => {
+    return createProject(data)
   })
 
-  ipcMain.handle('get-proyects', async () => {
-    return getProyects()
+  ipcMain.handle('get-projects', async () => {
+    return getProjects()
   })
 
-  ipcMain.handle('delete-proyect', async (__, proyect_id) => {
-    return deleteProyect(proyect_id)
+  ipcMain.handle('delete-project', async (__, project_id) => {
+    return deleteProject(project_id)
   })
 
-  ipcMain.handle('edit-proyect', async (__, data) => {
-    return editProyect(data)
+  ipcMain.handle('edit-project', async (__, data) => {
+    return editProject(data)
   })
 
   ipcMain.handle('create-probe', async (__, data) => {
     return createProbe(data)
   })
 
-  ipcMain.handle('get-probes', async () => {
-    return getProbes()
+  ipcMain.handle('get-probes', async (__, project_id) => {
+    return getProbes(project_id)
   })
 
   ipcMain.handle('delete-probe', async (__, probe_id) => {

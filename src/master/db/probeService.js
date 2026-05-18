@@ -1,21 +1,22 @@
 const { getDB } = require('./db')
 const { v4: uuidv4 } = require('uuid')
 
-function createProbe({ name, description }) {
+function createProbe({ name, description, project_id }) {
   const db = getDB()
   const id = uuidv4()
-  const stmt = db.prepare('INSERT INTO probes (id, name, description) VALUES (?, ?, ?)')
-  stmt.run(id, name, description)
+  const stmt = db.prepare('INSERT INTO probes (id, name, description, project_id) VALUES (?, ?, ?, ?)')
+  stmt.run(id, name, description, project_id)
   return id
 }
 
-function getProbes() {
+function getProbes(project_id) {
   const db = getDB()
   const stmt = db.prepare(`
     SELECT * FROM probes
+    WHERE project_id = ?
     ORDER BY name
     `)
-  return stmt.all()
+  return stmt.all(project_id)
 }
 
 function renameProbe({ id, name }) {

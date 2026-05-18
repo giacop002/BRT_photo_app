@@ -2,12 +2,14 @@
   import Sidebar from "./components/Sidebar.svelte";
   import MainWindow from "./components/MainWindow.svelte";
 
-  let probes = [];
+  let projects = [];
+  let probes = {};
   let samples = [];
 
   let selectedProbeId = null;
   let selectedProbeName = null;
   let selectedSampleId = null;
+  let selectedProjectId = null;
 
   let loadingSamples = false;
 
@@ -16,12 +18,21 @@
   }
 
   async function loadProbes() {
-    probes = await window.api.getProbes();
+    projects = await window.api.getProjects();
+    if (projects.length === 0) {
+      probes = {};
+      return;
+    }
+    for (const project of projects) {
+      const projectProbes = await window.api.getProbes(project.id);
+      probes[project.id] = projectProbes;
+    }
   }
 
-  async function handleSelectProbe({ id, name }) {
+  async function handleSelectProbe({ id, name, project_id }) {
     selectedProbeId = id;
     selectedProbeName = name;
+    selectedProjectId = project_id;
     selectedSampleId = null;
 
     loadingSamples = true;
@@ -30,14 +41,21 @@
   }
 
   async function handleCreateProbe({ name }) {
-    let new_probe_id = await window.api.createProbe({ name });
+    let new_project_id = await window.api.createProject({ name: 'New Project', code: 'NPR' });
+    let new_probe_id = await window.api.createProbe({ name, project_id: new_project_id });
     await loadProbes();
-    handleSelectProbe({ id: new_probe_id, name });
+    handleSelectProbe({ id: new_probe_id, name, project_id: new_project_id });
+  }
+
+  async function handleCreateProbeToProject({ name, project_id }) {
+    let new_probe_id = await window.api.createProbe({ name, project_id });
+    await loadProbes();
+    handleSelectProbe({ id: new_probe_id, name, project_id });
   }
 
   async function handleDeleteProbe(id) {
     await window.api.deleteProbe(id);
-    if (selectedProbeId === id) { selectedProbeId, selectedProbeName = null, null; }
+    if (selectedProbeId === id) { selectedProbeId, selectedProbeName, selectedProjectId = null, null, null; }
     await loadProbes();
     await refocusWindow();
   }
@@ -167,10 +185,13 @@
 
 <div class="app">
   <Sidebar
+    {projects}
     {probes}
     {selectedProbeId}
+    {selectedProjectId}
     on:selectProbe={(e) => handleSelectProbe(e.detail)}
     on:createProbe={(e) => handleCreateProbe(e.detail)}
+    on:createProbeToProject={(e) => handleCreateProbeToProject(e.detail)}
     on:deleteProbe={(e) => handleDeleteProbe(e.detail.id)}
     on:renameProbe={(e) => handleRenameProbe(e.detail)}
   />

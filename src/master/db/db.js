@@ -10,7 +10,7 @@ function initDB() {
   db = new Database(dbPath)
 
   db.exec(`
-    CREATE TABLE IF NOT EXISTS proyects (
+    CREATE TABLE IF NOT EXISTS projects (
       id TEXT PRIMARY KEY,
       name TEXT,
       code TEXT,
@@ -20,11 +20,11 @@ function initDB() {
 
     CREATE TABLE IF NOT EXISTS probes (
       id TEXT PRIMARY KEY,
-      proyect_id TEXT NOT NULL,
+      project_id TEXT NOT NULL,
       name TEXT,
       description TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(proyect_id) REFERENCES proyects(id) ON DELETE CASCADE
+      FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS samples (
@@ -50,8 +50,8 @@ function initDB() {
     CREATE INDEX IF NOT EXISTS idx_observations_sample ON observations(sample_id);
     CREATE INDEX IF NOT EXISTS idx_probes_name ON probes(name);
     CREATE INDEX IF NOT EXISTS idx_samples_probe ON samples(probe_id);
-    CREATE INDEX IF NOT EXISTS idx_proyects_name ON proyects(name);
-    CREATE INDEX IF NOT EXISTS idx_probes_proyect ON probes(proyect_id);
+    CREATE INDEX IF NOT EXISTS idx_projects_name ON projects(name);
+    CREATE INDEX IF NOT EXISTS idx_probes_project ON probes(project_id);
   `)
 }
 

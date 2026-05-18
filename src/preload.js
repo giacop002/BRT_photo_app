@@ -5,12 +5,12 @@ const { selectImageFile } = require('./master/fileStorage')
 
 contextBridge.exposeInMainWorld('api', {
   refocusWindow: () => ipcRenderer.invoke('refocus-window'),
-  createProyect: (data) => ipcRenderer.invoke('create-proyect', data),
-  getProyects: () => ipcRenderer.invoke('get-proyects'),
-  deleteProyect: (proyect_id) => ipcRenderer.invoke('delete-proyect', proyect_id),
-  editProyect: (data) => ipcRenderer.invoke('edit-proyect', data),
+  createProject: (data) => ipcRenderer.invoke('create-project', data),
+  getProjects: () => ipcRenderer.invoke('get-projects'),
+  deleteProject: (project_id) => ipcRenderer.invoke('delete-project', project_id),
+  editProject: (data) => ipcRenderer.invoke('edit-project', data),
   createProbe: (data) => ipcRenderer.invoke('create-probe', data),
-  getProbes: () => ipcRenderer.invoke('get-probes'),
+  getProbes: (project_id) => ipcRenderer.invoke('get-probes', project_id),
   deleteProbe: (probe_id) => ipcRenderer.invoke('delete-probe', probe_id),
   renameProbe: (data) => ipcRenderer.invoke('rename-probe', data),
   createSample: (data) => ipcRenderer.invoke('create-sample', data),

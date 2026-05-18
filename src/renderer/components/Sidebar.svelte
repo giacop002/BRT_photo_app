@@ -4,23 +4,30 @@
   import gearIcon from '@/assets/iconGear_White.svg'
   import editIcon from '@/assets/iconEdit_White.svg'
   import deleteIcon from '@/assets/iconDelete_White.svg'
+  import dotsIcon from '@/assets/iconDots_White.svg'
 
 
-  export let probes = []
+  export let projects = []
+  export let probes = {}
   export let selectedProbeId = null
+  export let selectedProjectId = null
 
   const dispatch = createEventDispatcher()
 
   let isCreating = false
-  let openMenuId = null
+  let openProbeMenuId = null
+  let openProjectMenuId = null
   let newProbeName = 'BRT-DDH-'
+  let newProbeToProjectName = 'BRT-DDH-'
   let createInput
   let renamingId = null
   let renameValue = ''
   let renameInput
+  let createToProjectInput
+  let createToProjectId = null
 
-  function handleSelect(id, name) {
-    dispatch('selectProbe', { id, name })
+  function handleSelect(id, name, project_id) {
+    dispatch('selectProbe', { id, name, project_id })
   }
 
   function handleDelete(id, event) {
@@ -30,19 +37,37 @@
     }
   }
 
-  function handleOptionsMenu(id, event) {
+  function handleDeleteProject(id, event) {
     event.stopPropagation()
-    openMenuId = openMenuId === id ? null : id
+    if (confirm('Are you sure you want to delete this project and all its drill holes?')) {
+      dispatch('deleteProject', { id })
+    }
   }
 
-  async function handleRename(probe) {
+  function handleProbeOptionsMenu(id, event) {
+    event.stopPropagation()
+    openProbeMenuId = openProbeMenuId === id ? null : id
+  }
+
+  function handleProjectOptionsMenu(id, event) {
+    event.stopPropagation()
+    openProjectMenuId = openProjectMenuId === id ? null : id
+  }
+
+  async function handleProbeRename(probe) {
     renamingId = probe.id
     renameValue = probe.name
-    openMenuId = null
+    openProbeMenuId = null
+    openProjectMenuId = null
 
     await tick()
     renameInput?.focus()
     renameInput?.select()
+  }
+
+  async function handleProjectRename(project_id) {
+    dispatch('renameProject', { id: project_id })
+    openProjectMenuId = null
   }
 
   function submitRename(probe) {
@@ -89,13 +114,48 @@
     newProbeName = 'BRT-DDH-'
   }
 
+  async function startCreateToProject(project_id) {
+    createToProjectId = project_id;
+    newProbeToProjectName = 'BRT-DDH-';
+
+    await tick();
+
+    setTimeout(() => {
+      createToProjectInput?.focus();
+      createToProjectInput?.select();
+    }, 0);
+  }
+
+  function submitCreateToProject() {
+    if (newProbeToProjectName.trim()) {
+      dispatch('createProbeToProject', { name: newProbeToProjectName.trim(), project_id: createToProjectId })
+      createToProjectId = null
+    }
+  }
+
+  function cancelCreateToProject() {
+    createToProjectId = null
+    newProbeToProjectName = 'BRT-DDH-'
+  }
+
   function handleKey(e) {
     if (e.key === 'Enter') submitCreate()
     if (e.key === 'Escape') cancelCreate()
   }
 
+  function handleCreateToProjectKey(e, project_id) {
+    if (e.key === 'Enter') {
+      submitCreateToProject()
+      createToProjectId = null
+    }
+    if (e.key === 'Escape') {
+      cancelCreateToProject()
+    }
+  }
+
   function handleClickOutside() {
-    openMenuId = null
+    openProbeMenuId = null
+    openProjectMenuId = null
   }
 
   onMount(() => {
@@ -115,73 +175,113 @@
     </button>
   </div>
 
-  {#if isCreating}
-    <input
-      class="input"
-      key="create-input"
-      bind:this={createInput}
-      bind:value={newProbeName}
-      placeholder="New Drill Hole"
-      on:keydown={handleKey}
-      on:blur={cancelCreate}
-    />
-  {/if}
-
   <div class="list">
-    {#if probes.length === 0 && !isCreating}
-      <div class="empty">
-        No drill holes yet
-        <button class="create" on:click={startCreate}>
-          Click
-          <img class="icon" src={plusIcon} alt="Create Probe" />
-          to create
-        </button>
-      </div>
-    {:else}
-      {#each probes as probe}
-        <div class="item
-          {probe.id === selectedProbeId ? 'selected' : ''}
-          {(openMenuId === probe.id) || (selectedProbeId === probe.id) ? 'active' : ''}"
+    {#each projects as project}
+      <div class="project">
+        <div class="header
+          {project.id === selectedProjectId ? 'selected' : ''}
+          {(openProjectMenuId === project.id) || (project.id === selectedProjectId) ? 'active' : ''}"
         >
-          {#if renamingId === probe.id}
-            <input
-              class="rename-input"
-              bind:this={renameInput}
-              bind:value={renameValue}
-              on:keydown={(e) => handleRenameKey(e, probe)}
-              on:blur={() => cancelRename()}
-            />
-          {:else}
-            <button class="name btn" on:click={() => handleSelect(probe.id, probe.name)}>
-              {probe.name}
-            </button>
-          {/if}
-
-          <button class="options btn" on:click={(e) => handleOptionsMenu(probe.id, e)}>
-            <img class="icon" src={gearIcon} alt="Options" />
+          <span>
+            {project.name} ({project.code})
+          </span>
+          <button class="project-options btn" on:click={(e) => handleProjectOptionsMenu(project.id, e)}>
+            <img class="icon" src={dotsIcon} alt="Options" />
           </button>
-
-          {#if openMenuId === probe.id}
-            <div class="menu">
-              <button class="btn" on:click={() => handleRename(probe)}>
-                <img class="icon" src={editIcon} alt="Rename" />
-                Rename
-              </button>
-              <button class="btn" on:click={(e) => handleDelete(probe.id, e)}>
-                <img class="icon" src={deleteIcon} alt="Delete" />
-                Delete
-              </button>
-            </div>
-          {/if}
         </div>
-      {/each}
+        {#if openProjectMenuId === project.id}
+          <div class="menu">
+            <button class="btn" on:click={() => startCreateToProject(project.id)}>
+              <img class="icon" src={plusIcon} alt="Create Probe" />
+              Add to Project
+            </button>
+            <button class="btn" on:click={() => handleProjectRename(project.id)}>
+              <img class="icon" src={editIcon} alt="Rename" />
+              Rename Project
+            </button>
+            <button class="btn" on:click={(e) => handleDeleteProject(project.id, e)}>
+              <img class="icon" src={deleteIcon} alt="Delete" />
+              Delete Project
+            </button>
+          </div>
+        {/if}
+        {#if createToProjectId === project.id}
+          <input
+            class="input"
+            key={`create-to-project-input-${project.id}`}
+            bind:this={createToProjectInput}
+            bind:value={newProbeToProjectName}
+            placeholder="New Drill Hole"
+            on:keydown={(e) => handleCreateToProjectKey(e, project.id)}
+            on:blur={() => cancelCreateToProject()}
+          />
+        {/if}
+        {#if probes[project.id]}
+          {#each probes[project.id] as probe}
+            <div class="item
+              {probe.id === selectedProbeId ? 'selected' : ''}
+              {(openProbeMenuId === probe.id) || (selectedProbeId === probe.id) ? 'active' : ''}"
+            >
+              {#if renamingId === probe.id}
+                <input
+                  class="rename-input"
+                  bind:this={renameInput}
+                  bind:value={renameValue}
+                  on:keydown={(e) => handleRenameKey(e, probe)}
+                  on:blur={() => cancelRename()}
+                />
+              {:else}
+                <button class="name btn" on:click={() => handleSelect(probe.id, probe.name, project.id)}>
+                  {probe.name}
+                </button>
+              {/if}
+
+              <button class="options btn" on:click={(e) => handleProbeOptionsMenu(probe.id, e)}>
+                <img class="icon" src={gearIcon} alt="Options" />
+              </button>
+
+              {#if openProbeMenuId === probe.id}
+                <div class="menu">
+                  <button class="btn" on:click={() => handleProbeRename(probe)}>
+                    <img class="icon" src={editIcon} alt="Rename" />
+                    Rename
+                  </button>
+                  <button class="btn" on:click={(e) => handleDelete(probe.id, e)}>
+                    <img class="icon" src={deleteIcon} alt="Delete" />
+                    Delete
+                  </button>
+                </div>
+              {/if}
+            </div>
+          {/each}
+        {/if}
+      </div>
+    {/each}
+  </div>
+
+  <div class="bottom">
+    {#if isCreating}
+      <input
+        class="input"
+        key="create-input"
+        bind:this={createInput}
+        bind:value={newProbeName}
+        placeholder="New Drill Hole"
+        on:keydown={handleKey}
+        on:blur={cancelCreate}
+      />
+    {:else}
+      <button class="create" on:click={startCreate}>
+        <img class="icon" src={plusIcon} alt="Create Probe" />
+        Add to New Project
+      </button>
     {/if}
   </div>
 </div>
 
 <style>
   .sidebar {
-    width: 220px;
+    width: 15vw;
     height: 100vh;
     background: rgb(5, 69, 112);
     color: #fff;
@@ -202,7 +302,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgb(226, 232, 240);
+    border-bottom: 2px solid rgb(226, 232, 240);
+  }
+
+  .project .header {
+    background: rgb(6, 89, 144);
+    border-bottom: none;
+  }
+
+  .project {
+    margin: 8px 0;
+  }
+
+  .bottom {
+    padding: 12px;
+    border-top: 2px solid rgb(226, 232, 240);
+    display: flex;
+    justify-content: center;
   }
 
   .list {
@@ -228,31 +344,26 @@
 
   .input {
     padding: 8px 10px;
-    margin: 8px;
     background: rgb(6, 89, 144);
     border: 1px solid rgb(226, 232, 240);
     color: white;
   }
 
-  .empty {
-    padding: 12px;
-    color: #aaa;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .empty button.create {
+  button.create {
     border-color: #fff;
     border-radius: 5px;
     border-width: 2px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
     padding: 8px 12px;
   }
 
-  .empty button.create:hover {
+  .bottom button.create {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+  }
+
+  button.create:hover {
     background-color: rgb(6, 89, 144);
     cursor: pointer;
   }

@@ -185,9 +185,14 @@
           <span>
             {project.name} ({project.code})
           </span>
-          <button class="project-options btn" on:click={(e) => handleProjectOptionsMenu(project.id, e)}>
-            <img class="icon" src={dotsIcon} alt="Options" />
-          </button>
+          <div class="actions">
+            <button class="btn" on:click={() => startCreateToProject(project.id)}>
+              <img class="icon" src={plusIcon} alt="Create Probe" />
+            </button>
+            <button class="project-options btn" on:click={(e) => handleProjectOptionsMenu(project.id, e)}>
+              <img class="icon" src={dotsIcon} alt="Options" />
+            </button>
+          </div>
         </div>
         {#if openProjectMenuId === project.id}
           <div class="menu">
@@ -206,15 +211,17 @@
           </div>
         {/if}
         {#if createToProjectId === project.id}
-          <input
-            class="input"
-            key={`create-to-project-input-${project.id}`}
-            bind:this={createToProjectInput}
-            bind:value={newProbeToProjectName}
-            placeholder="New Drill Hole"
-            on:keydown={(e) => handleCreateToProjectKey(e, project.id)}
-            on:blur={() => cancelCreateToProject()}
-          />
+          <div class="item">
+            <input
+              class="create-to-project"
+              key={`create-to-project-input-${project.id}`}
+              bind:this={createToProjectInput}
+              bind:value={newProbeToProjectName}
+              placeholder="New Drill Hole"
+              on:keydown={(e) => handleCreateToProjectKey(e, project.id)}
+              on:blur={() => cancelCreateToProject()}
+            />
+          </div>
         {/if}
         {#if probes[project.id]}
           {#each probes[project.id] as probe}
@@ -224,7 +231,7 @@
             >
               {#if renamingId === probe.id}
                 <input
-                  class="rename-input"
+                  class="rename-probe"
                   bind:this={renameInput}
                   bind:value={renameValue}
                   on:keydown={(e) => handleRenameKey(e, probe)}
@@ -262,7 +269,7 @@
   <div class="bottom">
     {#if isCreating}
       <input
-        class="input"
+        class="create-new"
         key="create-input"
         bind:this={createInput}
         bind:value={newProbeName}
@@ -281,7 +288,7 @@
 
 <style>
   .sidebar {
-    width: 15vw;
+    width: 300px;
     height: 100vh;
     background: rgb(5, 69, 112);
     color: #fff;
@@ -306,12 +313,13 @@
   }
 
   .project .header {
-    background: rgb(6, 89, 144);
     border-bottom: none;
   }
 
   .project {
-    margin: 8px 0;
+    margin: 8px;
+    border: 1px solid rgb(226, 232, 240);
+    border-radius: 4px;
   }
 
   .bottom {
@@ -328,7 +336,7 @@
   }
 
   .item {
-    padding: 10px 12px;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
   }
@@ -342,11 +350,14 @@
     background: rgb(6, 89, 144);
   }
 
-  .input {
-    padding: 8px 10px;
+  input {
+    padding: 4px 6px;
     background: rgb(6, 89, 144);
     border: 1px solid rgb(226, 232, 240);
     color: white;
+    font-size: 14px;
+    padding: 10px 12px;
+    width: 100%;
   }
 
   button.create {
@@ -418,14 +429,5 @@
 
   .menu button:hover {
     background: rgb(6, 89, 144);
-  }
-
-  .rename-input {
-    width: 100%;
-    padding: 4px 6px;
-    background: rgb(6, 89, 144);
-    border: 1px solid rgb(226, 232, 240);
-    color: white;
-    font-size: 14px;
   }
 </style>

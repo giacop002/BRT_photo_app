@@ -1,12 +1,12 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import getBaseMetadata from "@/utils/getBaseMetadata";
-    import ImagePreview from "@/renderer/components/img/ImagePreview.svelte";
-    import cropImgIcon from "@/assets/iconCropImg.svg";
-    import cropSqrIcon from "@/assets/iconCropSquare.svg";
-    import cancelIcon from "@/assets/iconX.svg";
-    import createIcon from "@/assets/iconPlus_White.svg";
-    import saveIcon from "@/assets/iconSave_White.svg";
+    import ImagePreview from "@C/img/ImagePreview.svelte";
+    import cropImgIcon from "@A/iconCropImg.svg";
+    import cropSqrIcon from "@A/iconCropSquare.svg";
+    import cancelIcon from "@A/iconX.svg";
+    import createIcon from "@A/iconPlus_White.svg";
+    import saveIcon from "@A/iconSave_White.svg";
 
     export let samples = [];
     export let isCreatingSample = false;

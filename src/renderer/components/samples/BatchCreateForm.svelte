@@ -1,6 +1,6 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-    // import ImagePreview from "@/renderer/components/img/ImagePreview.svelte";
+    import { createEventDispatcher } from 'svelte';
+    // import ImagePreview from '@C/img/ImagePreview.svelte';
 
     export let batchSamples = [];
 

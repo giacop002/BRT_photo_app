@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import SampleRow from './SampleRow.svelte';
+    import SampleRow from '@C/samples/SampleRow.svelte';
 
     export let samples = [];
     export let selectedSampleId = null;

@@ -1,8 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import rightArrowIcon from "@/assets/iconArrowRight_White.svg";
-  import deleteIcon from "@/assets/iconDelete.svg";
-  import exportIcon from "@/assets/iconFileExport.svg";
+  import rightArrowIcon from "@A/iconArrowRight_White.svg";
+  import deleteIcon from "@A/iconDelete.svg";
+  import exportIcon from "@A/iconFileExport.svg";
 
   export let sample
   export let isSelected = false

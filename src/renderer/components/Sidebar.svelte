@@ -1,10 +1,10 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
-  import plusIcon from '@/assets/iconPlus_White.svg'
-  import gearIcon from '@/assets/iconGear_White.svg'
-  import editIcon from '@/assets/iconEdit_White.svg'
-  import deleteIcon from '@/assets/iconDelete_White.svg'
-  import dotsIcon from '@/assets/iconDots_White.svg'
+  import plusIcon from '@A/iconPlus_White.svg'
+  import gearIcon from '@A/iconGear_White.svg'
+  import editIcon from '@A/iconEdit_White.svg'
+  import deleteIcon from '@A/iconDelete_White.svg'
+  import dotsIcon from '@A/iconDots_White.svg'
 
 
   export let projects = []

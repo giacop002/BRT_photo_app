@@ -1,6 +1,6 @@
 <script>
-  import ImageCrop from "./ImageCrop.svelte";
-  import { createEventDispatcher } from "svelte";
+  import ImageCrop from '@C/img/ImageCrop.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let file_path;
   export let enableCrop = true;

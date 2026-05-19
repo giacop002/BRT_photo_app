@@ -15,7 +15,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
+      '@S': path.resolve(__dirname, 'src/renderer/stores'),
+      '@C': path.resolve(__dirname, 'src/renderer/components'),
+      '@A': path.resolve(__dirname, 'src/renderer/assets')
     }
   }
 })

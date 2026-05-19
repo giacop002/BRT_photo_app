@@ -1,12 +1,12 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import leftArrowIcon from "@/assets/iconArrowLeft.svg";
-    import exportIcon from "@/assets/iconFileExport.svg";
-    import exportAllIcon from "@/assets/iconFiles.svg";
-    import addIcon from "@/assets/iconPlus_White.svg";
-    import editIcon from '@/assets/iconEdit_White.svg';
-    import addPhotoIcon from '@/assets/iconPlusPhoto_White.svg';
-    import addMultipleIcon from '@/assets/iconPlusMultiple_White.svg';
+    import leftArrowIcon from '@A/iconArrowLeft.svg';
+    import exportIcon from '@A/iconFileExport.svg';
+    import exportAllIcon from '@A/iconFiles.svg';
+    import addIcon from '@A/iconPlus_White.svg';
+    import editIcon from '@A/iconEdit_White.svg';
+    import addPhotoIcon from '@A/iconPlusPhoto_White.svg';
+    import addMultipleIcon from '@A/iconPlusMultiple_White.svg';
 
     export let samples = [];
     export let selectedProbeId = null;

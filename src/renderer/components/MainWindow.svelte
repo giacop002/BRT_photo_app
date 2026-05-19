@@ -1,12 +1,12 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import getBaseMetadata from "@/utils/getBaseMetadata";
-    import SampleList from "./samples/SampleList.svelte";
-    import SampleCreateForm from "./samples/SampleCreateForm.svelte";
-    import BatchCreateForm from "./samples/BatchCreateForm.svelte";
-    import SampleDetail from "./samples/SampleDetail.svelte";
-    import Header from "./Header.svelte";
-    import plusIcon from '@/assets/iconPlus.svg'
+    import getBaseMetadata from '@/utils/getBaseMetadata';
+    import SampleList from '@C/samples/SampleList.svelte';
+    import SampleCreateForm from '@C/samples/SampleCreateForm.svelte';
+    import BatchCreateForm from '@C/samples/BatchCreateForm.svelte';
+    import SampleDetail from '@C/samples/SampleDetail.svelte';
+    import Header from '@C/header/Header.svelte';
+    import plusIcon from '@A/iconPlus.svg'
 
     export let samples = [];
     export let selectedSampleId = null;

@@ -18,7 +18,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
       '@S': path.resolve(__dirname, 'src/renderer/stores'),
       '@C': path.resolve(__dirname, 'src/renderer/components'),
-      '@A': path.resolve(__dirname, 'src/renderer/assets')
+      '@A': path.resolve(__dirname, 'src/assets')
     }
   }
 })

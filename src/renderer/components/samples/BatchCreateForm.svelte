@@ -1,70 +1,42 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    // Stores
+    import {
+        batchSamples,
+        selectedSampleIndex,
+        batchDate,
+        selectedSample,
+        updateBatchSample,
+        saveBatch,
+        cancelBatch,
+        selectBatchSample
+    } from '@S/batch';
+
     // import ImagePreview from '@C/img/ImagePreview.svelte';
-
-    export let batchSamples = [];
-
-    const dispatch = createEventDispatcher();
-
-    let selectedBatchIndex = 0;
-    let batchDate = '';
-    let initialized = false;
-    let currentSample = batchSamples[selectedBatchIndex] || null;
 
     // let previewRef;
 
-    $: if (currentSample && !initialized) {
-        currentSample = batchSamples[selectedBatchIndex] || null;
-        batchDate = currentSample.sample_date || '';
-        initialized = true;
-    }
-
-    $: if (currentSample && initialized){
-        currentSample = batchSamples[selectedBatchIndex] || null;
-        currentSample.sample_date = batchDate;
-    }
-
-    function propagateDepthChange() {
-        if (currentSample.depth_to < currentSample.depth_from) {
-            currentSample.depth_to = currentSample.depth_from + 1;
-        }
-        for (let i = 0; i < batchSamples.length; i++) {
-            if (i <= selectedBatchIndex) continue;
-            const sample = batchSamples[i];
-            if (sample.depth_from < currentSample.depth_to) {
-                sample.depth_from = currentSample.depth_to + (i - selectedBatchIndex - 1);
-                sample.depth_to = sample.depth_from + 1;
-            }
-        }
-        batchSamples = [...batchSamples];
-    }
-
-    function selectSample(index) {
-        propagateDepthChange();
-        selectedBatchIndex = index;
+    function handleSelectSample(index) {
+        selectBatchSample(index);
     }
 
     function handlePrev() {
-        if (selectedBatchIndex > 0) {
-            selectSample(selectedBatchIndex - 1);
+        if ($selectedSampleIndex > 0) {
+            handleSelectSample($selectedSampleIndex - 1);
         }
     }
 
     function handleNext() {
-        if (selectedBatchIndex < batchSamples.length - 1) {
-            selectSample(selectedBatchIndex + 1);
+        if ($selectedSampleIndex < $batchSamples.length - 1) {
+            handleSelectSample($selectedSampleIndex + 1);
         }
     }
 
     function handleSaveAll() {
-        selectSample(selectedBatchIndex);
-        dispatch('saveAll', { samples: batchSamples });
-        initialized = false;
+        saveBatch();
     }
 
     function handleCancel() {
-        initialized = false;
-        dispatch('close');
+        cancelBatch();
     }
 
     // function handleCrop(event) {
@@ -76,15 +48,15 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h3>Imported Photos</h3>
-            <p>{batchSamples.length} samples</p>
+            <p>{$batchSamples.length} samples</p>
         </div>
 
         <div class="thumbnail-list">
-            {#each batchSamples as sample, index}
+            {#each $batchSamples as sample, index}
                 <button
-                    class:selected={index === selectedBatchIndex}
+                    class:selected={index === $selectedSampleIndex}
                     class="thumbnail-item"
-                    on:click={() => selectSample(index)}
+                    on:click={() => handleSelectSample(index)}
                 >
                     <img
                         src={`file://${sample.file_path}`}
@@ -112,7 +84,15 @@
                     <p>Batch Date:</p>
                     <input
                         type="date"
-                        bind:value={batchDate}
+                        value={$batchDate}
+                        on:input={(e) =>
+                            updateBatchSample(
+                                $selectedSampleIndex,
+                                {
+                                    batch_date: e.target.value
+                                }
+                            )
+                        }
                     />
                 </div>
                 <div class="field">
@@ -120,7 +100,15 @@
                     <input
                         type="number"
                         step="0.01"
-                        bind:value={currentSample.depth_from}
+                        value={$selectedSample.depth_from}
+                        on:input={(e) =>
+                            updateBatchSample(
+                                $selectedSample.order,
+                                {
+                                    depth_from: parseFloat(e.target.value)
+                                }
+                            )
+                        }
                     />
                 </div>
                 <div class="field">
@@ -128,17 +116,25 @@
                     <input
                         type="number"
                         step="0.01"
-                        bind:value={currentSample.depth_to}
+                        value={$selectedSample.depth_to}
+                        on:input={(e) =>
+                            updateBatchSample(
+                                $selectedSample.order,
+                                {
+                                    depth_to: parseFloat(e.target.value)
+                                }
+                            )
+                        }
                     />
                 </div>
             </div>
 
             <div class="actions">
-                <button class="save btn-secondary" on:click={handlePrev} disabled={selectedBatchIndex === 0}>
+                <button class="save btn-secondary" on:click={handlePrev} disabled={$selectedSampleIndex === 0}>
                     Previous
                 </button>
 
-                <button class="prev btn-secondary" on:click={handleNext} disabled={selectedBatchIndex === batchSamples.length - 1}>
+                <button class="prev btn-secondary" on:click={handleNext} disabled={$selectedSampleIndex === $batchSamples.length - 1}>
                     Next
                 </button>
 
@@ -155,10 +151,10 @@
         <div class="left">
             <div class="preview">
                 <!-- <ImagePreview
-                    file_path={currentSample.file_path}
+                    file_path={$selectedSample.file_path}
                     on:crop={handleCrop}
                 /> -->
-                <img src={currentSample.file_path} alt="current sample">
+                <img src={$selectedSample.file_path} alt="current sample">
             </div>
         </div>
     </div>

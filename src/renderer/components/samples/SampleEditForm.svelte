@@ -1,16 +1,11 @@
 <script>
-    import getBaseMetadata from "@/utils/getBaseMetadata";
-    import ImagePreview from "@C/img/ImagePreview.svelte";
-
     // Stores
     import { resetUI } from "@S/ui";
-    import { createSample, samples } from "@S/samples";
+    import { updateSample, selectedSample } from "@S/samples";
 
     // Assets
-    import cropImgIcon from "@A/iconCropImg.svg";
-    import cropSqrIcon from "@A/iconCropSquare.svg";
     import cancelIcon from "@A/iconX.svg";
-    import createIcon from "@A/iconPlus_White.svg";
+    import saveIcon from "@A/iconSave_White.svg";
 
 
     let file_path = null;
@@ -20,40 +15,45 @@
 
     let initialized = false;
 
-    let previewRef;
+    // let previewRef;
 
-    $: if ($samples && !initialized) {
-        ({ depth_from, sample_date } = getBaseMetadata($samples));
-        depth_to = depth_from + 1;
+    $: if ($selectedSample && !initialized) {
+        file_path = $selectedSample.image_path;
+        depth_from = $selectedSample.depth_from ?? '';
+        depth_to = $selectedSample.depth_to ?? '';
+        sample_date = $selectedSample.sample_date
+            ? $selectedSample.sample_date.slice(0, 10)
+            : '';
 
         initialized = true;
     }
 
-    async function handleSubmit() {
+    async function handleSubmitEdit() {
         if (!file_path) {
             alert('Please select an image');
             return;
         }
+
         if (depth_from && depth_to && depth_from > depth_to) {
-            alert('Depth from < depth to')
-            return
+            alert('Depth from < depth to');
+            return;
         }
 
-         const newSampleData = {
+        const updatedSampleData = {
             file_path,
-            cropped_image: previewRef?.getCroppedImage(),
+            // cropped_image: previewRef?.getCroppedImage(),
             depth_from: depth_from !== '' ? parseFloat(depth_from) : null,
             depth_to: depth_to !== '' ? parseFloat(depth_to) : null,
             sample_date: sample_date || null
         };
 
         try {
-            await createSample(newSampleData);
+            await updateSample($selectedSample.id, updatedSampleData);
             reset();
         }
         catch (err) {
             console.error(err);
-            alert('Failed to create sample');
+            alert('Failed to update sample');
         }
     }
 
@@ -66,32 +66,15 @@
         depth_from = '';
         depth_to = '';
         sample_date = '';
-
         initialized = false;
         resetUI();
-    }
-
-    async function pickFile() {
-        file_path = await window.api.selectImageFile();
     }
 </script>
 
 <div class="content">
     <div class="left">
         <div class="preview">
-            {#if file_path}
-                <ImagePreview
-                    {file_path}
-                    bind:this={previewRef}
-                />
-            {:else}
-                <div class="placeholder">
-                    No image selected
-                    <button class="pick-img" on:click={pickFile}>
-                        Select image
-                    </button>
-                </div>
-            {/if}
+            <img src={file_path} alt="sample">
         </div>
     </div>
     <div class="right">
@@ -108,24 +91,10 @@
             <input type="date" bind:value={sample_date} />
         </div>
 
-        <button class="pick-img" on:click={pickFile}>
-            {file_path ? 'Change image' : 'Select image'}
-        </button>
-        <div class="adjust-crop">
-            <button class="maximize-crop" on:click={() => previewRef?.maximizeCrop()} disabled={!file_path}>
-                <img class="icon" src={cropImgIcon} alt="Use full img icon" />
-                Use full image
-            </button>
-            <button class="reset-crop" on:click={() => previewRef?.resetCrop()} disabled={!file_path}>
-                <img class="icon" src={cropSqrIcon} alt="Reset crop icon" />
-                Reset crop
-            </button>
-        </div>
-
         <div class="actions">
-            <button class="save" on:click={handleSubmit}>
-                <img class="icon" src={createIcon} alt="Create" />
-                Create
+            <button class="save" on:click={handleSubmitEdit}>
+                <img class="icon" src={saveIcon} alt="Save" />
+                Save
             </button>
             <button class="cancel" on:click={handleCancel}>
                 <img class="icon" src={cancelIcon} alt="Cancel" />
@@ -169,12 +138,9 @@
         background: #fafafa;
     }
 
-    .placeholder {
-        color: #888;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+    .preview img {
+        max-width: 100%;
+        max-height: 100%;
     }
 
     .right {
@@ -228,35 +194,6 @@
 
     .cancel:hover {
         background: #ccc;
-    }
-
-    .adjust-crop {
-        display: flex;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .adjust-crop button {
-        flex: 1;
-        padding: 10px;
-        border: none;
-    }
-
-    .adjust-crop button:not(:disabled):hover {
-        cursor: pointer;
-        background: #ccc;
-    }
-
-    .pick-img {
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-        background: rgb(5, 69, 112);
-        color: white;
-    }
-
-    .pick-img:hover {
-        background: rgb(6, 89, 144);
     }
 
     img.icon {

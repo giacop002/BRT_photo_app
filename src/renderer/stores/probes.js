@@ -10,6 +10,10 @@ import {
 const _probesByProject = writable({});
 const _selectedProbeId = writable(null);
 
+const unsubsribeSelectedProject = selectedProjectId.subscribe(() => {
+    _selectedProbeId.set(null);
+});
+
 // Derived stores
 export const probes = derived(
     [_probesByProject, selectedProjectId],
@@ -108,6 +112,7 @@ export async function deleteProbe(probeId) {
         _selectedProbeId.set(null);
     }
 
+    await window.api.refocusWindow();
     await loadProbes();
 }
 

@@ -5,6 +5,9 @@ const _ui = writable({
     // loading global
     loading: false,
 
+    // project detail
+    isEditingProject: false,
+
     // sample form
     isCreatingSample: false,
     isEditingSample: false,
@@ -45,6 +48,7 @@ export const currentMode = derived(
         if ($ui.isCreatingSample) return 'create';
         if ($ui.isViewingSampleDetail) return 'detail';
         if ($ui.isBatchCreating) return 'batch';
+        if ($ui.isEditingProject) return 'project';
 
         return 'list';
     }
@@ -63,6 +67,8 @@ export function resetUI() {
     _ui.set({
         loading: false,
 
+        isEditingProject: false,
+
         isCreatingSample: false,
         isEditingSample: false,
 
@@ -78,25 +84,41 @@ export function resetUI() {
     });
 }
 
-export function openCreateSample() {
+export function openProjectEdit() {
+    resetUI();
     _ui.update(state => ({
         ...state,
-        isCreatingSample: true,
-        isEditingSample: false,
-        editingSampleId: null
+        isEditingProject: true
+    }));
+}
+
+export function closeProjectEdit() {
+    resetUI();
+    _ui.update(state => ({
+        ...state,
+        isEditingProject: false
+    }));
+}
+
+export function openCreateSample() {
+    resetUI();
+    _ui.update(state => ({
+        ...state,
+        isCreatingSample: true
     }));
 }
 
 export function openEditSample(sampleId) {
+    resetUI();
     _ui.update(state => ({
         ...state,
-        isCreatingSample: false,
         isEditingSample: true,
         editingSampleId: sampleId
     }));
 }
 
 export function closeSampleForm() {
+    resetUI();
     _ui.update(state => ({
         ...state,
         isCreatingSample: false,
@@ -106,6 +128,7 @@ export function closeSampleForm() {
 }
 
 export function openBatchCreate() {
+    resetUI();
     _ui.update(state => ({
         ...state,
         isBatchCreating: true
@@ -113,6 +136,7 @@ export function openBatchCreate() {
 }
 
 export function closeBatchCreate() {
+    resetUI();
     _ui.update(state => ({
         ...state,
         isBatchCreating: false
@@ -120,6 +144,7 @@ export function closeBatchCreate() {
 }
 
 export function openSampleDetail() {
+    resetUI();
     _ui.update(state => ({
         ...state,
         isViewingSampleDetail: true
@@ -127,6 +152,7 @@ export function openSampleDetail() {
 }
 
 export function closeSampleDetail() {
+    resetUI();
     _ui.update(state => ({
         ...state,
         isViewingSampleDetail: false

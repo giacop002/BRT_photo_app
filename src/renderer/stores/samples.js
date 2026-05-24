@@ -1,8 +1,10 @@
 import { writable, derived, get } from 'svelte/store';
+import { setLoading } from '@S/ui';
 import {
     probes,
     selectedProbe,
     selectedProbeId,
+    selectProbe,
     loadProbes
 } from '@S/probes';
 
@@ -34,13 +36,21 @@ export const selectedSampleId = {
     subscribe: _selectedSampleId.subscribe
 };
 
+export const canExportSamples = derived(
+    [samples, selectedProbeId],
+    ([$samples, $selectedProbeId]) =>
+        !!$selectedProbeId && $samples.length > 0
+);
+
+// Actions
 export async function loadSamples(probeId = null) {
-    const currentProbeId =
-        probeId ?? get(selectedProbeId);
+    const currentProbeId = probeId ?? get(selectedProbeId);
 
     if (!currentProbeId) {
         return;
     }
+
+    setLoading(true, 'Loading samples...');
 
     const sampleList = await window.api.getSamplesByProbe(currentProbeId);
 
@@ -64,6 +74,8 @@ export async function loadSamples(probeId = null) {
     ) {
         _selectedSampleId.set(null);
     }
+
+    setLoading(false);
 }
 
 export async function createSample(sampleData) {
@@ -78,7 +90,9 @@ export async function createSample(sampleData) {
         probe_id: currentProbeId
     });
 
+    setLoading(true, 'Creating sample...');
     await loadSamples(currentProbeId);
+    setLoading(false);
 }
 
 export async function updateSample(sampleId, data) {
@@ -89,7 +103,9 @@ export async function updateSample(sampleId, data) {
 
     const currentProbeId = get(selectedProbeId);
 
+    setLoading(true, 'Updating sample...');
     await loadSamples(currentProbeId);
+    setLoading(false);
 }
 
 export async function deleteSample(sampleId) {
@@ -101,7 +117,9 @@ export async function deleteSample(sampleId) {
 
     const currentProbeId = get(selectedProbeId);
 
+    setLoading(true, 'Deleting sample...');
     await loadSamples(currentProbeId);
+    setLoading(false);
 }
 
 export function selectSample(sampleId) {
@@ -119,3 +137,39 @@ export function selectSample(sampleId) {
 
     _selectedSampleId.set(sampleId);
 }
+
+export async function exportSampleToPdf(id) {
+    const currentProbeId = get(selectedProbeId);
+    const data = { sample_id: id, probe_id: currentProbeId };
+
+    const result = await window.api.exportSample(data);
+
+    if (result.canceled) return;
+    if (result.success) {
+        alert('Sample exported successfully');
+        await window.api.refocusWindow();
+    } else {
+        alert('Failed to export sample: ' + result.error);
+        await window.api.refocusWindow();
+    }
+}
+
+export async function exportAllSamplesToPdf() {
+    const currentProbeId = get(selectedProbeId);
+    if (!currentProbeId) return;
+    const currentSamples = get(samples);
+    if (currentSamples.length === 0) {
+      alert('No samples to export');
+      return;
+    }
+
+    const result = await window.api.exportAllSamples(currentProbeId);
+    if (result.canceled) return;
+    if (result.success) {
+      alert('Samples exported successfully');
+      await window.api.refocusWindow();
+    } else {
+      alert('Failed to export samples: ' + result.error);
+      await window.api.refocusWindow();
+    }
+  }

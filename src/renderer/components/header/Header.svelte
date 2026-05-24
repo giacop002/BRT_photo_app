@@ -1,85 +1,39 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
     import ButtonBox from '@C/header/ButtonBox.svelte';
     import logo from '@A/fitzroy-minerals-logo.png';
 
-    export let samples = [];
-    export let selectedProbeId = null;
-    export let selectedProbeName = null;
-    export let selectedSampleId = null;
-    export let isCreatingSample = false;
-    export let isBatchCreating = false;
-    export let isEditingSample = false;
-
-    const dispatch = createEventDispatcher();
-
-    function handleExportSample(e) {
-        dispatch('exportSample', e.detail);
-    }
-
-    function handleExportAllSamples() {
-        if (!selectedProbeId) return;
-        if (samples.length === 0) {
-            alert('No samples to export');
-            return;
-        }
-        dispatch('exportAllSamples');
-    }
-
-    function handleOpenSampleCreateForm() {
-        isCreatingSample = true;
-        dispatch('openSampleCreateForm');
-    }
-
-    function handleOpenBatchCreateForm() {
-        isBatchCreating = true;
-        dispatch('openBatchCreateForm');
-    }
-
-    export function cancelBatchUpload() {
-        isBatchCreating = false;
-    }
-
-    function handleGoBack() {
-        isCreatingSample = false;
-        isBatchCreating = false;
-        selectedSampleId = null;
-        dispatch('goBack');
-    }
+    // Stores
+    import { currentMode } from '@S/ui';
+    import { selectedProject } from '@S/projects';
+    import { selectedProbe } from '@S/probes';
 </script>
 
 <div class="header">
     <div class="title">
         <img src={logo} alt="Logo" />
         <h2>
-        {#if isCreatingSample && !isEditingSample}
-            {selectedProbeName} - New Sample
-        {:else if selectedSampleId && !isEditingSample}
-            {selectedProbeName} - Sample Detail
-        {:else if isBatchCreating}
-            {selectedProbeName} - Import Batch
-        {:else if isEditingSample}
-            {selectedProbeName} - Edit Sample
-        {:else if (!selectedProbeId)}
-            No drill hole selected
+        {#if !$selectedProject}
+            Probe Photo App
         {:else}
-            {selectedProbeName} - Samples
+            {$selectedProject.name} ({$selectedProject.code})
+            {#if $currentMode != 'project' && $selectedProbe}
+                {' - ' + $selectedProbe.name}
+                {#if $currentMode === 'list'}
+                    {' - Samples'}
+                {:else if $currentMode === 'create'}
+                    {' - New Sample'}
+                {:else if $currentMode === 'batch'}
+                    {' - Import Batch'}
+                {:else if $currentMode === 'edit'}
+                    {' - Edit Sample'}
+                {:else if $currentMode === 'detail'}
+                    {' - Sample Detail'}
+                {/if}
+            {/if}
         {/if}
         </h2>
     </div>
-    <ButtonBox
-        {samples}
-        {selectedProbeId}
-        {selectedSampleId}
-        {isCreatingSample}
-        {isBatchCreating}
-        on:exportSample={handleExportSample}
-        on:exportAllSamples={handleExportAllSamples}
-        on:openSampleCreateForm={handleOpenSampleCreateForm}
-        on:openBatchCreateForm={handleOpenBatchCreateForm}
-        on:editSample={(e) => dispatch('editSample', e.detail)}
-        on:goBack={handleGoBack}
-    />
+    <ButtonBox />
 </div>
 
 <style>

@@ -1,27 +1,24 @@
 <script>
-    import { onMount } from "svelte";
-
-    export let sampleId;
-
-    let sample = null;
-
-    async function loadData() {
-        sample = await window.api.getSampleById(sampleId);
-    }
-
-    onMount(loadData);
+    // Stores
+    import { selectedSample } from "@S/samples";
+    // Assets
+    import placeholderImg from "@A/Placeholder.svg";
 </script>
 
-{#if sample}
+{#if $selectedSample}
 <div class="content">
     <div class="image">
-        <img src={`file://${sample.image_path}`} alt="sample" />
+        <img
+            src={`file://${$selectedSample.image_path}`}
+            alt="sample"
+            on:error={(e) => e.target.src = placeholderImg}
+        />
     </div>
 
     <div class="meta">
-        <p><strong>From:</strong> {sample.depth_from} m</p>
-        <p><strong>To:</strong> {sample.depth_to} m</p>
-        <p><strong>Date:</strong> {sample.sample_date || '-'}</p>
+        <p><strong>From:</strong> {$selectedSample.depth_from} m</p>
+        <p><strong>To:</strong> {$selectedSample.depth_to} m</p>
+        <p><strong>Date:</strong> {$selectedSample.sample_date || '-'}</p>
     </div>
 </div>
 {/if}

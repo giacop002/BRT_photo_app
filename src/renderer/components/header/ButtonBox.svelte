@@ -1,5 +1,23 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    // Stores
+    import { get } from 'svelte/store';
+    import {
+        currentMode,
+        openCreateSample,
+        openEditSample,
+        resetUI
+    } from '@S/ui';
+    import {
+        samples,
+        selectedSampleId,
+        canExportSamples,
+        exportSampleToPdf,
+        exportAllSamplesToPdf
+    } from '@S/samples';
+    import { selectedProbeId } from '@S/probes';
+    import { startBatchCreate } from '@S/batch';
+
+    // Assets
     import leftArrowIcon from '@A/iconArrowLeft.svg';
     import exportIcon from '@A/iconFileExport.svg';
     import exportAllIcon from '@A/iconFiles.svg';
@@ -8,99 +26,90 @@
     import addPhotoIcon from '@A/iconPlusPhoto_White.svg';
     import addMultipleIcon from '@A/iconPlusMultiple_White.svg';
 
-    export let samples = [];
-    export let selectedProbeId = null;
-    export let selectedSampleId = null;
-    export let isCreatingSample = false;
-    export let isBatchCreating = false;
-
-    let openCreateMenu = false;
-
-    const dispatch = createEventDispatcher();
+    let showCreateOptions = false;
 
     function handleExportSample() {
-        if (!selectedSampleId) return;
-        dispatch('exportSample', { id: selectedSampleId });
+        const sampleId = get(selectedSampleId);
+
+        if (!sampleId) return;
+
+        exportSampleToPdf(sampleId);
     }
 
     function handleExportAllSamples() {
-        if (!selectedProbeId) return;
-        if (samples.length === 0) {
+        const probeId = get(selectedProbeId);
+        const currentSamples = get(samples);
+
+        if (!probeId) return;
+
+        if (currentSamples.length === 0) {
             alert('No samples to export');
             return;
         }
-        dispatch('exportAllSamples');
+
+        exportAllSamplesToPdf();
     }
 
-    function handleOpenCreateMenu() {
-        openCreateMenu = !openCreateMenu;
+    function toggleCreateOptionsMenu() {
+        showCreateOptions = !showCreateOptions;
     }
 
     function handleOpenSampleCreateForm() {
-        openCreateMenu = false;
-        isCreatingSample = true;
-        dispatch('openSampleCreateForm');
+        showCreateOptions = false;
+        openCreateSample();
     }
 
     function handleOpenBatchCreateForm() {
-        openCreateMenu = false;
-        isBatchCreating = true;
-        dispatch('openBatchCreateForm');
+        showCreateOptions = false;
+        startBatchCreate();
     }
 
     function handleGoBack() {
-        isCreatingSample = false;
-        isBatchCreating = false;
-        openCreateMenu = false;
-        selectedSampleId = null;
-        dispatch('goBack');
+        resetUI();
     }
 
     function handleEditSample() {
-        if (!selectedSampleId) return;
-        dispatch('editSample', { id: selectedSampleId });
+        const sampleId = get(selectedSampleId);
+        if (!sampleId) return;
+        openEditSample(sampleId);
+    }
+
+    $: if ($currentMode !== 'list') {
+        showCreateOptions = false;
     }
 </script>
 
 <div class="button-box">
-    {#if isCreatingSample || isBatchCreating}
-    <!-- Sample Create Form -->
+    {#if $currentMode != 'list'}
         <button class="back btn-secondary"
             on:click={handleGoBack}
         >
             <img class="icon" src={leftArrowIcon} alt="Back" />
              Back
         </button>
-    {:else if selectedSampleId}
-    <!-- Sample Details/Edit -->
-        <button class="back btn-secondary"
-            on:click={handleGoBack}
-        >
-            <img class="icon" src={leftArrowIcon} alt="Back" />
-             Back
-        </button>
-        <button class="edit btn-primary"
-            on:click={handleEditSample}
-        >
-            <img class="icon" src={editIcon} alt="Edit" />
-             Edit
-        </button>
-        <button class="export btn-secondary"
-            on:click={handleExportSample}
-            disabled={!selectedSampleId}
-        >
-            <img class="icon" src={exportIcon} alt="Export Sample" />
-            Export
-        </button>
-    {:else if selectedProbeId}
-    <!-- Sample List -->
+        {#if $currentMode === 'detail'}
+            <button class="edit btn-primary"
+                on:click={handleEditSample}
+            >
+                <img class="icon" src={editIcon} alt="Edit" />
+                 Edit
+            </button>
+            <button class="export btn-secondary"
+                on:click={handleExportSample}
+                disabled={!$selectedSampleId}
+            >
+                <img class="icon" src={exportIcon} alt="Export Sample" />
+                Export
+            </button>
+        {/if}
+    {:else}
         <button class="create btn-primary"
-                disabled={!selectedProbeId}
-                on:click={handleOpenCreateMenu}>
+                disabled={!$selectedProbeId}
+                on:click={toggleCreateOptionsMenu}>
             <img class="icon" src={addIcon} alt="Add Sample" />
             Add Sample
         </button>
-        {#if openCreateMenu}
+        {#if showCreateOptions}
             <div class="menu">
                 <button class="btn" on:click={handleOpenSampleCreateForm}>
                 <img class="icon" src={addPhotoIcon} alt="Create sample" />
@@ -113,7 +122,7 @@
             </div>
         {/if}
         <button class="export btn-secondary"
-                disabled={!selectedProbeId || samples.length === 0}
+                disabled={!$canExportSamples}
                 on:click={handleExportAllSamples}
         >
             <img class="icon" src={exportAllIcon} alt="Export All Samples" />
@@ -146,6 +155,7 @@
         font-size: 14px;
         font-family: Lato, sans-serif;
         border: none;
+        border-radius: 4px;
     }
 
     .btn-secondary:hover:not(:disabled) {
@@ -158,7 +168,11 @@
         color: white;
     }
 
-    .btn-primary:hover {
+    .btn-primary:disabled {
+        background-color: rgb(5, 69, 112, 0.5);
+    }
+
+    .btn-primary:hover:not(:disabled) {
         background-color: rgb(6, 89, 144);
         cursor: pointer;
     }

@@ -1,172 +1,36 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
-    import getBaseMetadata from '@/utils/getBaseMetadata';
+    // Stores
+    import { ui, currentMode } from '@S/ui';
+    import { selectedProbe } from '@S/probes';
+
+    // Components
+    import Header from '@C/header/Header.svelte';
+    import ProjectEditForm from '@C/projects/ProjectEditForm.svelte';
     import SampleList from '@C/samples/SampleList.svelte';
     import SampleCreateForm from '@C/samples/SampleCreateForm.svelte';
+    import SampleEditForm from '@C/samples/SampleEditForm.svelte';
     import BatchCreateForm from '@C/samples/BatchCreateForm.svelte';
     import SampleDetail from '@C/samples/SampleDetail.svelte';
-    import Header from '@C/header/Header.svelte';
-    import plusIcon from '@A/iconPlus.svg'
 
-    export let samples = [];
-    export let selectedSampleId = null;
-    export let loadingSamples = false;
-    export let selectedProbeId = null;
-    export let selectedProbeName = null;
-
-    let isCreatingSample = false;
-    let isEditingSample = false;
-    let sampleToEdit_id = null;
-    let prevProbeId = null;
-
-    let isBatchCreating = false;
-    let batchSamples = [];
-    let selectedBatchIndex = 0;
-
-    let headerRef;
-
-    const dispatch = createEventDispatcher();
-
-    function handleSelectSample(id) {
-        dispatch('selectSample', { id });
-    }
-
-    function handleExportThisSample(id) {
-        dispatch('exportThisSample', { id });
-    }
-
-    function handleExportAllSamples() {
-        if (!selectedProbeId) return;
-        if (samples.length === 0) {
-            alert('No samples to export');
-            return;
-        }
-        dispatch('exportAllSamples');
-    }
-
-    function handleOpenSampleCreateForm() {
-        isCreatingSample = true;
-        dispatch('openSampleCreateForm');
-    }
-
-    function handleSubmitCreateSample(sampleData) {
-        isCreatingSample = false;
-        dispatch('createSample', sampleData);
-    }
-
-    function handleStartEdit(sampleId) {
-        isEditingSample = true;
-        sampleToEdit_id = sampleId;
-        isCreatingSample = true;
-    }
-
-    function handleSubmitEdit(sampleData) {
-        isEditingSample = false;
-        isCreatingSample = false;
-        dispatch('editSample', sampleData);
-    }
-
-    function handleGoBack() {
-        isCreatingSample = false;
-        isBatchCreating = false;
-        isEditingSample = false;
-        selectedSampleId = null;
-        dispatch('goBack');
-    }
-
-    $: if (selectedProbeId !== prevProbeId) {
-        selectedSampleId = null;
-        isCreatingSample = false;
-        isBatchCreating = false;
-        isEditingSample = false;
-        sampleToEdit_id = null;
-        prevProbeId = selectedProbeId;
-    }
-
-    async function handleOpenBatchCreate() {
-        const files = await window.api.selectImageFiles();
-
-        if (!files.length) {
-            isBatchCreating = false;
-            headerRef.cancelBatchUpload();
-            return;
-        }
-
-        files.sort();
-        batchSamples = buildBatchSamples(files);
-
-        selectedBatchIndex = 0;
-        isBatchCreating = true;
-    }
-
-    function buildBatchSamples(files) {
-        let _, meta = getBaseMetadata(samples);
-        const generatedSamples = files.map((file, index) => ({
-            temp_id: `batch-${index}`,
-            file_path: file,
-            depth_from: meta.depth_from + index,
-            depth_to: meta.depth_from + index + 1,
-            sample_date: meta.sample_date,
-            croppped_image: null,
-            edited: false,
-        }));
-        return generatedSamples;
-    }
-
-    function handleSaveBatch() {
-        dispatch('saveBatch', { samples: batchSamples });
-        isBatchCreating = false;
-        batchSamples = [];
-    }
-
-    function handleCancelBatch() {
-        isBatchCreating = false;
-        batchSamples = [];
-    }
-
-
+    // Assets
+    import plusIcon from '@A/iconPlus.svg';
 </script>
 
 <div class="main">
     <div class="samples">
-        <Header
-            {samples}
-            {selectedProbeId}
-            {selectedProbeName}
-            {selectedSampleId}
-            {isCreatingSample}
-            {isEditingSample}
-            {isBatchCreating}
-            on:exportSample={(e) => handleExportThisSample(e.detail.id)}
-            on:exportAllSamples={handleExportAllSamples}
-            on:openSampleCreateForm={handleOpenSampleCreateForm}
-            on:openBatchCreateForm={handleOpenBatchCreate}
-            on:editSample={(e) => handleStartEdit(e.detail.id)}
-            on:goBack={handleGoBack}
-            bind:this={headerRef}
-        />
-        {#if isCreatingSample}
-            <SampleCreateForm
-                {samples}
-                {isCreatingSample}
-                editMode={isEditingSample}
-                {sampleToEdit_id}
-                on:submit={(e) => handleSubmitCreateSample(e.detail)}
-                on:edit={(e) => handleSubmitEdit(e.detail)}
-                on:close={handleGoBack}
-            />
-        {:else if isBatchCreating}
-            <BatchCreateForm
-                {batchSamples}
-                on:saveAll={handleSaveBatch}
-                on:close={handleCancelBatch}
-            />
-        {:else if selectedSampleId}
-            <SampleDetail
-                sampleId={selectedSampleId}
-            />
+        <Header />
+        {#if $currentMode === 'project'}
+            <ProjectEditForm />
+        {:else if $currentMode === 'create'}
+            <SampleCreateForm />
+        {:else if $currentMode === 'edit'}
+            <SampleEditForm />
+        {:else if $currentMode === 'detail'}
+            <SampleDetail />
+        {:else if $currentMode === 'batch'}
+            <BatchCreateForm />
         {:else}
-            {#if !selectedProbeId}
+            {#if !$selectedProbe}
                 <div class="empty">
                     <strong>Select a drill hole</strong> on the sidebar to see its samples, or <strong>create a new one:</strong>
                     <ol>
@@ -176,19 +40,13 @@
                     </ol>
                 </div>
             {:else}
-                <SampleList
-                    {samples}
-                    {selectedSampleId}
-                    on:selectSample={(e) => handleSelectSample(e.detail.id)}
-                    on:deleteSample={(e) => dispatch('deleteSample', { id: e.detail.id })}
-                    on:exportSample={(e) => handleExportThisSample(e.detail.id)}
-                />
+                <SampleList />
             {/if}
         {/if}
     </div>
 
-    {#if loadingSamples}
-      <div class="overlay {loadingSamples ? 'active' : 'empty'}">Loading samples...</div>
+    {#if $ui.loading}
+      <div class="overlay {$ui.loading ? 'active' : 'empty'}">{$ui.overlayMessage}</div>
     {/if}
 </div>
 
